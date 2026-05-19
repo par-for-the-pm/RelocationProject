@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Relocation — UI Breakup Prototype</title>
+<style>
+  :root {
+    --teal: #00ACA6;
+    --teal-dark: #008F8A;
+    --teal-soft: #E0F5F4;
+    --teal-tag: #CFEDEB;
+    --ink: #1A1F2E;
+    --ink-2: #4A5568;
+    --ink-3: #8A95A8;
+    --line: #ECEEF2;
+    --bg: #F5F7F9;
+    --card: #FFFFFF;
+    --green: #2E7D5B;
+    --strike: #B0B7C2;
+    --warn-bg: #FFF7E6;
+    --warn-border: #F0C77E;
+    --input-bg: #F8FAFB;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--bg); }
+  body { font-size: 14px; line-height: 1.45; }
+
+  /* NOT sticky — scrolls with the page */
+  .topbar { background: #FFFFFF; border-bottom: 1px solid var(--line); padding: 14px 16px; }
+  .topbar h1 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+  .topbar .subtitle { color: var(--ink-2); font-size: 13px; margin-bottom: 12px; }
+  .callout { background: var(--warn-bg); border-left: 3px solid var(--warn-border); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; font-size: 12.5px; color: var(--ink); }
+  .callout b { color: var(--teal-dark); }
+
+  .global-controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; padding: 10px 12px; background: var(--input-bg); border-radius: 8px; }
+  .global-controls .ctl { display: flex; flex-direction: column; gap: 3px; min-width: 130px; }
+  .global-controls .ctl label { font-size: 10.5px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+  .global-controls .ctl input { padding: 6px 8px; font-size: 13px; border: 1px solid #D7DCE3; border-radius: 6px; background: #FFF; font-family: inherit; color: var(--ink); }
+  .global-controls .global-label { font-size: 11px; color: var(--ink-3); margin-right: 6px; align-self: center; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ---- Mobile-first accordion layout ---- */
+  .grid { display: flex; flex-direction: column; gap: 0; padding: 12px 0 60px; max-width: 600px; margin: 0 auto; }
+
+  /* Accordion wrapper — collapsed by default */
+  .accordion { border-bottom: 1px solid var(--line); background: var(--card); }
+  .accordion-trigger { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; cursor: pointer; user-select: none; background: var(--card); border: none; width: 100%; text-align: left; }
+  .accordion-trigger:active { background: #F5F7F9; }
+  .accordion-trigger-left { display: flex; flex-direction: column; gap: 4px; }
+  .accordion-scenario-id { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .accordion-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .accordion-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .accordion-tag { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: var(--teal-soft); color: var(--teal-dark); }
+  .accordion-tag.upfront { background: #E8F4FF; color: #1A5FA8; }
+  .accordion-tag.mix { background: #F0EBF8; color: #5B3F8C; }
+  .accordion-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .accordion-total { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .accordion-chev { font-size: 18px; color: var(--ink-3); transition: transform 0.2s; line-height: 1; }
+  .accordion.open .accordion-chev { transform: rotate(180deg); }
+  .accordion-body { display: none; border-top: 1px solid var(--line); }
+  .accordion.open .accordion-body { display: block; }
+
+  .card { background: var(--card); overflow: hidden; display: flex; flex-direction: column; }
+  .card-head { background: var(--teal); color: #FFF; padding: 14px 18px; }
+  .card-head .scenario-id { font-size: 11px; opacity: 0.85; letter-spacing: 0.08em; text-transform: uppercase; }
+  .card-head .scenario-title { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .tenure-callout { display: inline-block; background: rgba(255,255,255,0.22); color: #FFF; font-size: 12.5px; padding: 4px 10px; border-radius: 14px; font-weight: 600; margin-top: 8px; }
+  .card-head .tag-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .tag { background: rgba(255,255,255,0.18); color: #FFF; font-size: 10.5px; padding: 2px 8px; border-radius: 12px; font-weight: 500; }
+
+  /* Per-scenario inputs block */
+  .inputs-block { background: var(--input-bg); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .inputs-block .inputs-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; margin-bottom: 8px; }
+  .inputs-block .inputs-title { font-size: 11px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 6px; }
+  .inputs-block .reset-btn { font-size: 11px; color: var(--teal); background: none; border: 1px solid var(--teal); padding: 2px 8px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+  .inputs-block .reset-btn:hover { background: var(--teal); color: #FFF; }
+  .inputs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 8px 10px; }
+  .input-row { display: flex; flex-direction: column; gap: 3px; }
+  .input-row label { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+  .input-row input, .input-row select { padding: 5px 7px; font-size: 12.5px; border: 1px solid #D7DCE3; border-radius: 5px; background: #FFF; font-family: inherit; color: var(--ink); }
+  .input-row input:focus, .input-row select:focus { outline: 2px solid var(--teal-soft); border-color: var(--teal); }
+  .input-group-divider { font-size: 10px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 0; grid-column: 1 / -1; border-top: 1px dashed #D7DCE3; margin-top: 4px; }
+  .input-group-divider:first-child { border-top: none; margin-top: 0; }
+
+  .section { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .section:last-of-type { border-bottom: none; }
+  .section-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--teal); }
+  .section-title .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--teal-soft); display: inline-flex; align-items: center; justify-content: center; color: var(--teal); font-size: 11px; }
+  .chev { font-size: 14px; color: var(--ink-3); transition: transform 0.15s; }
+  .chev.open { transform: rotate(180deg); }
+
+  .product-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+  .product-name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .product-meta { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
+  .pill { display: inline-block; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
+  .pill-delivery { background: #E0F5F4; color: var(--teal-dark); }
+  .pill-return { background: #FFE6E1; color: #B83C2E; }
+
+  .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13.5px; }
+  .row .lbl { color: var(--ink-2); }
+  .row .val { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .row.indent .lbl { padding-left: 16px; color: var(--ink-3); font-size: 12.5px; }
+  .row.indent .val { color: var(--ink-2); font-weight: 500; }
+  .row.muted .lbl, .row.muted .val { color: var(--ink-3); font-style: italic; font-size: 12px; }
+  .row.bold { font-weight: 700; padding-top: 10px; border-top: 1px dashed var(--line); margin-top: 4px; }
+  .row.bold .lbl, .row.bold .val { font-weight: 700; color: var(--ink); font-size: 14.5px; }
+
+  .discount-val { color: var(--green); }
+  .strike { text-decoration: line-through; color: var(--strike); margin-right: 4px; font-weight: 400; }
+  .waiver-tag { background: var(--teal-soft); color: var(--teal-dark); font-size: 10.5px; padding: 1px 6px; border-radius: 4px; margin-left: 6px; font-weight: 600; }
+  /* Tooltip ⓘ icon */
+  .info { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: #DDE3EA; color: var(--ink-2); font-size: 9px; font-weight: 700; font-style: normal; cursor: help; margin-left: 6px; position: relative; }
+  .info:hover { background: var(--teal); color: #FFF; }
+  .info:hover::after { content: attr(data-tip); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: #1A1F2E; color: #FFF; padding: 7px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 500; font-style: normal; line-height: 1.35; white-space: normal; width: 220px; z-index: 100; box-shadow: 0 6px 16px rgba(0,0,0,0.2); pointer-events: none; text-align: left; }
+  .info:hover::before { content: ""; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%) translateY(7px); border: 5px solid transparent; border-top-color: #1A1F2E; z-index: 100; }
+  .coupon-calc-tag { background: #FFF7E6; color: #7A5800; font-size: 10.5px; padding: 1px 6px; border-radius: 4px; margin-left: 6px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* Nested expandable group ("Balance Tenure Left" with details inside) */
+  .nest { background: #F8FBFB; border: 1px solid #E1ECEC; border-radius: 8px; margin: 6px 0; overflow: hidden; }
+  .nest-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; cursor: pointer; user-select: none; }
+  .nest-head:hover { background: #F0F7F7; }
+  .nest-head .nest-title { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); font-size: 13.5px; }
+  .nest-head .nest-value { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .nest-head .nest-chev { font-size: 13px; color: var(--ink-3); transition: transform 0.15s; }
+  .nest.open .nest-chev { transform: rotate(180deg); }
+  .nest-body { padding: 4px 14px 12px 14px; display: none; border-top: 1px dashed #D9E6E6; background: #FCFEFE; }
+  .nest.open .nest-body { display: block; }
+  .nest-body .row .lbl { color: var(--ink-2); font-size: 12.5px; padding-left: 10px; }
+  .nest-body .row .val { font-size: 12.5px; }
+  .nest-tip { font-size: 11.5px; color: var(--ink-3); font-style: italic; padding: 6px 0 2px 10px; }
+
+  .item-header { font-size: 13px; font-weight: 700; color: var(--ink); padding: 6px 0; border-bottom: 1px solid var(--line); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+  .charges-group { background: #F4F7F8; border-radius: 6px; padding: 4px 10px; margin: 4px 0; }
+  .tax-group { background: #F4F7F8; border-radius: 6px; padding: 4px 10px; margin: 4px 0; }
+
+  .total-payable-amount { background: linear-gradient(180deg, #F8FBFB 0%, #FFFFFF 100%); padding: 16px 18px; }
+  .total-payable-amount .section-title { color: var(--ink); }
+
+  .cta { width: 100%; padding: 14px; background: var(--teal); color: #FFF; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.12s; }
+  .cta:hover { background: var(--teal-dark); }
+
+  .footer { padding: 24px 28px 50px; color: var(--ink-3); font-size: 12px; max-width: 900px; }
+  .footer h3 { font-size: 13px; color: var(--ink-2); margin: 14px 0 4px; }
+  .footer code { background: #EFF2F5; padding: 1px 4px; border-radius: 3px; font-size: 11.5px; }
+
+
+  /* Plan type callout row */
+  .plan-callout-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #F8FAFB; border-bottom: 1px solid var(--line); }
+  .plan-callout-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+  .plan-callout-badge.monthly { background: #E0F5F4; color: var(--teal-dark); }
+  .plan-callout-badge.upfront { background: #E8F4FF; color: #1A5FA8; }
+  .plan-callout-desc { font-size: 11px; color: var(--ink-3); }
+
+  /* Scenario-type tinting */
+  .card.upfront .card-head { background: linear-gradient(135deg, #00ACA6 0%, #009387 100%); }
+  .card.mix .card-head { background: linear-gradient(135deg, #00ACA6 0%, #4A5878 100%); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Relocation — UI Breakup Prototype</h1>
+  <div class="subtitle">Six scenarios, Figma-exact labels, live recalculation. Each card has its own inputs at the top so you can tweak in isolation.</div>
+
+  <div class="callout">
+    <b>Pricing rule reminder:</b> Relocation <b>Monthly</b> = today's prices (current catalog × current running discount, billing anchor resets) · Relocation <b>Upfront</b> = price protected (snapshot base × Renewals-table discount; tenure carries forward)
+  </div>
+
+  <div class="global-controls">
+    <div class="global-label">Global constants:</div>
+    <div class="ctl"><label>Coupon Code</label><input id="g_couponCode" type="text" value="STAY20"/></div>
+    <div class="ctl"><label>FCP Rate %</label><input id="g_fcpPct" type="number" value="10" min="0" max="100" step="1"/></div>
+    <div class="ctl"><label>GST %</label><input id="g_gstPct" type="number" value="18" min="0" max="100" step="1"/></div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="footer">
+  <h3>Formulas (mirrors the xlsx)</h3>
+  Tenure discount lookup: <code>{1:5%, 3:10%, 6:15%, 9:20%, 12:25%}</code> ·
+  Monthly Rent = <code>Base × (1 − discount)</code> ·
+  Relocation Fee = <code>round(CFT × 59 × 0.5 / 100) × 100</code> ·
+  MT (Monthly): months_used ≥ 3 → Reloc charge = ₹0 ·
+  Cliff (Upfront): used ≥ (plan≥9 ? 6 : 3) → Reloc charge = ₹0 [Cliff table: 3mo→3, 6mo→3, 9mo→6, 12mo→6] ·
+  Tax split (swap only): On Product = (Rental − coupon) × GST; On Charges &amp; VAS = (Reloc + VAS) × GST ·
+  Net Payable (Upfront swap) = max(Total with tax − credit, 0).
+
+  <h3>Sources</h3>
+  PRD: Relocation_V5 · Figma: Frame 1984077566 + Open/Closed states · Working sheet: Reloc cart calculation (Final tab).
+</div>
+
+<script>
+  // ============ Formula helpers ============
+  function tenureDisc(months) {
+    return ({1: 0.05, 3: 0.10, 6: 0.15, 9: 0.20, 12: 0.25})[months] ?? 0.15;
+  }
+  function calcReloc(cft, factor = 0.5) {
+    return Math.round((cft * 59 * factor) / 100) * 100;
+  }
+  function cliff(planTenure) { return planTenure >= 9 ? 6 : 3; }
+  function fmt(v) {
+    if (v === 0 || v == null) return "₹0";
+    const sign = v < 0 ? "-" : "";
+    const num = Math.abs(v).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+    return sign + "₹" + num;
+  }
+
+  // ============ Global config ============
+  function readGlobal() {
+    return {
+      gstPct: (+document.getElementById("g_gstPct").value || 0) / 100,
+      fcpPct: (+document.getElementById("g_fcpPct").value || 0) / 100,
+      couponCode: document.getElementById("g_couponCode").value || "STAY20",
+    };
+  }
+
+  // ============ Per-scenario state (defaults) ============
+  const defaults = {
+    s1: { basePrice: 1000, tenure: 1, monthsUsed: 7, cft: 12, couponPct: 20 },
+    s2: { oldBase: 1000, newBase: 2000, tenure: 1, monthsUsed: 7, cftNew: 25, couponPct: 20 },
+    s3: { basePrice: 1000, planTenure: 12, monthsUsed: 6, cft: 12, couponPct: 10, gstPaid: 810 },
+    s4: { oldBase: 1000, planTenure: 12, monthsUsed: 6, newBase: 2000, newTenure: 6, cftNew: 25, couponPct: 20 },
+    s5: { s1_basePrice: 1000, s1_tenure: 1, s1_monthsUsed: 7, s1_cft: 12, s2_basePrice: 1500, s2_planTenure: 12, s2_monthsUsed: 6, s2_cft: 20, couponPct: 20 },
+    s6: { s1_newBase: 2000, s1_tenure: 1, s1_monthsUsed: 7, s1_cftNew: 25, s2_oldBase: 1500, s2_planTenure: 12, s2_monthsUsed: 6, s2_newBase: 1800, s2_newTenure: 6, s2_cftNew: 18, couponPct: 20 },
+    s7: {
+      r1_base: 1000, r1_tenure: 1, r1_monthsUsed: 5, r1_cft: 12,
+      r2_base: 1500, r2_planTenure: 12, r2_monthsUsed: 6, r2_cft: 18, r2_gstPaid: 1215,
+      sw1_newBase: 2000, sw1_tenure: 1, sw1_monthsUsed: 5, sw1_cftNew: 25,
+      sw2_oldBase: 1200, sw2_planTenure: 12, sw2_monthsUsed: 6, sw2_newBase: 2200, sw2_newTenure: 6, sw2_cftNew: 20, sw2_gstPaid: 972,
+      couponPct: 20
+    },
+  };
+  // Clone defaults into live state
+  const state = JSON.parse(JSON.stringify(defaults));
+
+  // ============ Scenario calculators ============
+  const MT_MONTHLY = 3;  // Monthly plan minimum tenure threshold
+  function calcS1(s, g) {
+    const disc = tenureDisc(s.tenure);
+    const monthly = s.basePrice * (1 - disc);
+    const rental = monthly * s.tenure;
+    const coupon = Math.min((s.couponPct / 100) * rental, rental);
+    const relocCalc = calcReloc(s.cft);
+    const mtMet = s.monthsUsed >= MT_MONTHLY;
+    const relocCharged = mtMet ? 0 : relocCalc;
+    const vas = g.fcpPct * rental;
+    const subtotal = rental - coupon + relocCharged + vas;
+    const gst = g.gstPct * subtotal;
+    const total = subtotal + gst;
+    return { disc, monthly, rental, coupon, relocCalc, mtMet, relocCharged, vas, subtotal, gst, total };
+  }
+  function calcS2(s, g) {
+    const disc = tenureDisc(s.tenure);
+    const monthlyNew = s.newBase * (1 - disc);
+    const rental = monthlyNew * s.tenure;
+    const coupon = Math.min((s.couponPct / 100) * rental, rental);
+    const swapFee = 0;
+    const relocCalc = calcReloc(s.cftNew);
+    const mtMet = s.monthsUsed >= MT_MONTHLY;
+    const relocCharged = mtMet ? 0 : relocCalc;
+    const vas = g.fcpPct * rental;
+    const subtotal = rental - coupon + relocCharged + vas + swapFee;
+    const gst = g.gstPct * subtotal;
+    const total = subtotal + gst;
+    const taxOnProduct = (rental - coupon) * g.gstPct;
+    const taxOnCharges = (relocCharged + vas) * g.gstPct;
+    return { disc, monthlyNew, rental, coupon, swapFee, relocCalc, mtMet, relocCharged, vas, subtotal, gst, total, taxOnProduct, taxOnCharges };
+  }
+  function calcS3(s, g) {
+    // Upfront tenure discount from Renewals table (snapshot at plan start)
+    const disc = tenureDisc(s.planTenure);
+    const tenureDiscValue = s.basePrice * disc;
+    const effective = s.basePrice - tenureDiscValue;        // Effective Monthly Rental
+    const tenureLeft = Math.max(0, s.planTenure - s.monthsUsed);
+
+    // Upfront Total = Effective × Tenure Left  (this is what customer owes for remaining tenure)
+    const upfrontTotal = effective * tenureLeft;
+
+    // Coupon = couponPct% × Upfront Total
+    const couponRaw = upfrontTotal * (s.couponPct / 100);
+
+    // VAS & Reloc
+    const vas = g.fcpPct * upfrontTotal;
+    const relocCalc = calcReloc(s.cft);
+    const cliffCleared = s.monthsUsed >= cliff(s.planTenure);
+    const relocCharged = cliffCleared ? 0 : relocCalc;
+
+    // Credit = Upfront Total + GST actually paid at plan start (read from order record)
+    // GST rate can vary (e.g. changed recently), so we use the stored paid amount, not recalculate
+    // Backend = Credit; Customer label = "Balance Tenure Credit"
+    const gstPaid = s.gstPaid || 0;
+    const credit = upfrontTotal + gstPaid;
+
+    // Pre-credit subtotal: Upfront Total − Coupon + VAS + Reloc
+    const subtotalBeforeCredit = upfrontTotal - couponRaw + vas + relocCharged;
+    const gst = g.gstPct * subtotalBeforeCredit;
+    const totalBeforeCredit = subtotalBeforeCredit + gst;
+
+    // Net payable after credit (floor at 0)
+    const netPayable = Math.max(totalBeforeCredit - credit, 0);
+
+    return {
+      disc, tenureDiscValue, effective, tenureLeft,
+      upfrontTotal, couponRaw,
+      vas, relocCalc, cliffCleared, relocCharged,
+      gstPaid, credit,
+      subtotalBeforeCredit, gst, totalBeforeCredit, netPayable
+    };
+  }
+  function calcS4(s, g) {
+    const oldDisc = 0.25;
+    const oldEffective = s.oldBase * (1 - oldDisc);
+    const tenureLeft = Math.max(0, s.planTenure - s.monthsUsed);
+    const credit = oldEffective * tenureLeft;
+    const newDisc = tenureDisc(s.newTenure);
+    const newMonthly = s.newBase * (1 - newDisc);
+    const newRental = newMonthly * s.newTenure;
+    const swapFee = 0;
+    const relocCalc = calcReloc(s.cftNew);
+    const cliffCleared = s.monthsUsed >= cliff(s.planTenure);
+    const relocCharged = cliffCleared ? 0 : relocCalc;
+    const vas = g.fcpPct * newRental;
+    const coupon = Math.min((s.couponPct / 100) * newRental, newRental);
+    const subtotal = newRental - coupon + relocCharged + vas + swapFee;
+    const gst = g.gstPct * subtotal;
+    const totalWithTax = subtotal + gst;
+    const netPayable = Math.max(totalWithTax - credit, 0);
+    const taxOnProduct = (newRental - coupon) * g.gstPct;
+    const taxOnCharges = (relocCharged + vas) * g.gstPct;
+    const plpDelta = newMonthly - oldEffective;
+    return { oldDisc, oldEffective, tenureLeft, credit, newDisc, newMonthly, newRental, swapFee, relocCalc, cliffCleared, relocCharged, vas, coupon, subtotal, gst, totalWithTax, netPayable, taxOnProduct, taxOnCharges, plpDelta };
+  }
+  function calcS5(s, g) {
+    const s1 = calcS1({ basePrice: s.s1_basePrice, tenure: s.s1_tenure, monthsUsed: s.s1_monthsUsed, cft: s.s1_cft, couponPct: s.couponPct }, g);
+    const s2 = calcS3({ basePrice: s.s2_basePrice, planTenure: s.s2_planTenure, monthsUsed: s.s2_monthsUsed, cft: s.s2_cft, couponPct: s.couponPct }, g);
+    const cartTotalPrice = s1.rental;
+    const cartReloc = s1.relocCharged + s2.relocCharged;
+    const cartFcp = s1.vas + s2.vas;
+    const cartCoupon = Math.min((s.couponPct / 100) * (cartTotalPrice + cartReloc), cartTotalPrice + cartReloc);
+    const cartSubtotal = cartTotalPrice + cartReloc + cartFcp - cartCoupon;
+    const cartGst = g.gstPct * cartSubtotal;
+    const cartTotal = cartSubtotal + cartGst;
+    return { s1, s2, cartTotalPrice, cartReloc, cartFcp, cartCoupon, cartSubtotal, cartGst, cartTotal, s2_basePrice: s.s2_basePrice, s2_tenureLeft: s2.tenureLeft };
+  }
+  function calcS6(s, g) {
+    const s1 = calcS2({ oldBase: 1000, newBase: s.s1_newBase, tenure: s.s1_tenure, monthsUsed: s.s1_monthsUsed, cftNew: s.s1_cftNew, couponPct: s.couponPct }, g);
+    const s2 = calcS4({ oldBase: s.s2_oldBase, planTenure: s.s2_planTenure, monthsUsed: s.s2_monthsUsed, newBase: s.s2_newBase, newTenure: s.s2_newTenure, cftNew: s.s2_cftNew, couponPct: s.couponPct }, g);
+    const cartTotalPrice = s1.rental + s2.newRental;
+    const cartReloc = s1.relocCharged + s2.relocCharged;
+    const cartFcp = s1.vas + s2.vas;
+    const cartCoupon = Math.min((s.couponPct / 100) * cartTotalPrice, cartTotalPrice);
+    const cartSubtotal = cartTotalPrice + cartReloc + cartFcp - cartCoupon;
+    const cartGst = g.gstPct * cartSubtotal;
+    const cartTotalWithTax = cartSubtotal + cartGst;
+    const totalCredit = s2.credit;
+    const cartNetPayable = Math.max(cartTotalWithTax - totalCredit, 0);
+    return { s1, s2, cartTotalPrice, cartReloc, cartFcp, cartCoupon, cartSubtotal, cartGst, cartTotalWithTax, totalCredit, cartNetPayable };
+  }
+
+  // ============ Render helpers ============
+  function row(lbl, val, opts = {}) {
+    const cls = ["row"];
+    if (opts.indent) cls.push("indent");
+    if (opts.bold) cls.push("bold");
+    if (opts.muted) cls.push("muted");
+    const valClass = opts.discount ? "val discount-val" : "val";
+    let valStr = typeof val === "number" ? fmt(val) : val;
+    if (opts.discount && typeof val === "number") valStr = fmt(-Math.abs(val));
+    return `<div class="${cls.join(" ")}"><span class="lbl">${lbl}</span><span class="${valClass}">${valStr}</span></div>`;
+  }
+  function waiverTag() { return `<span class="waiver-tag">FREE WITH YOUR PLAN</span>`; }
+  function infoIcon(tipText) {
+    const safe = String(tipText).replace(/"/g, "&quot;");
+    return `<span class="info" data-tip="${safe}">i</span>`;
+  }
+  // Locked tooltip copy (from PM-approved tooltip table)
+  const TIPS = {
+    relocation_charges: "One-time charges for pickup, moving, delivery, and installation during relocation.",
+    balance_tenure_carried_forward: "Your unused subscription tenure will continue on the relocated order.",
+    credit: "Available credits or refunds adjusted against your final payable amount.",
+  };
+  function chargesVASBlock(vas, reloc, opts = {}) {
+    const showWaiver = opts.relocWaived;
+    const relocTipIcon = " " + infoIcon(opts.relocTip || TIPS.relocation_charges);
+    const relocValHtml = showWaiver
+      ? `<span class="strike">${fmt(opts.relocCalc || reloc)}</span> ₹0 ${waiverTag()}`
+      : fmt(reloc);
+    return `
+      <div class="charges-group">
+        ${row("Charges and VAS", vas + reloc)}
+        <div class="row indent"><span class="lbl">Total VAS</span><span class="val">${fmt(vas)}</span></div>
+        <div class="row indent"><span class="lbl">${opts.relocLabel || "Relocation Fee"}${relocTipIcon}</span><span class="val">${relocValHtml}</span></div>
+      </div>
+    `;
+  }
+  function taxSplitBlock(taxTotal, onProduct, onCharges) {
+    return `
+      <div class="tax-group">
+        <div class="row"><span class="lbl">Tax ${infoIcon("GST split. On Product = (Rental − coupon) × 18%; On Charges &amp; VAS = (Reloc + VAS) × 18%.")}</span><span class="val">${fmt(taxTotal)}</span></div>
+        ${row("On Product", onProduct, { indent: true })}
+        ${row("On Charges & VAS", onCharges, { indent: true })}
+      </div>
+    `;
+  }
+  function ctaButton(label = "Proceed with Relocation") {
+    return `<button class="cta">${label} →</button>`;
+  }
+  function expandable(idKey, label, contentHtml) {
+    return `
+      <div class="section">
+        <div class="section-head" onclick="toggleSec('${idKey}')">
+          <div class="section-title">
+            <span class="dot">☰</span>
+            <span>${label}</span>
+          </div>
+          <span class="chev" id="chev-${idKey}">▾</span>
+        </div>
+        <div id="body-${idKey}" style="display:none; margin-top:10px;">
+          ${contentHtml}
+        </div>
+      </div>
+    `;
+  }
+  window.toggleSec = function (idKey) {
+    const body = document.getElementById("body-" + idKey);
+    const chev = document.getElementById("chev-" + idKey);
+    if (body.style.display === "none") { body.style.display = ""; chev.classList.add("open"); }
+    else { body.style.display = "none"; chev.classList.remove("open"); }
+  };
+  window.toggleNest = function (idKey) {
+    const el = document.getElementById("nest-" + idKey);
+    if (el) el.classList.toggle("open");
+  };
+  // Helper: a nested expandable "Balance Tenure Left" block — headline + collapsed detail
+  function balanceTenureNest(idKey, monthsLeft, detailHtml, tipText) {
+    const tip = tipText ? infoIcon(tipText) : "";
+    return `
+      <div class="nest" id="nest-${idKey}">
+        <div class="nest-head" onclick="toggleNest('${idKey}')">
+          <span class="nest-title">Balance Tenure Left ${tip}</span>
+          <span class="nest-value">${monthsLeft} Month${monthsLeft === 1 ? "" : "s"} left<span class="nest-chev">▾</span></span>
+        </div>
+        <div class="nest-body">
+          ${detailHtml}
+        </div>
+      </div>
+    `;
+  }
+
+
+  function planCalloutRow(type, planTenure) {
+    if (type === 'monthly') {
+      return `<div class="plan-callout-row">
+        <span class="plan-callout-badge monthly">📅 Monthly</span>
+        <span class="plan-callout-desc">${infoIcon("Pay month-to-month. Renews automatically each month.")}</span>
+      </div>`;
+    }
+    const opts = planTenure ? `${planTenure}-month plan` : "3 / 6 / 9 / 12 month plans";
+    return `<div class="plan-callout-row">
+      <span class="plan-callout-badge upfront">🔒 Upfront · ${opts}</span>
+      <span class="plan-callout-desc">${infoIcon("Pay for the full tenure upfront (3, 6, 9, or 12 months). Price is protected for the duration.")}</span>
+    </div>`;
+  }
+
+  function totalPayableAmountBlock(lines) {
+    let html = `<div class="section total-payable-amount">
+      <div class="section-title"><span class="dot">₹</span><span>Total Payable Amount</span></div>`;
+    lines.forEach(line => {
+      const opts = {};
+      if (line.bold) opts.bold = true;
+      if (line.discount) opts.discount = true;
+      if (line.muted) opts.muted = true;
+      html += row(line.lbl, line.val, opts);
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  // ============ Per-scenario input panels ============
+  function inputField(scenarioId, field, label, value, type = "number", options = null) {
+    const id = `inp_${scenarioId}_${field}`;
+    if (type === "select") {
+      const opts = options.map(o => `<option value="${o.v}" ${+value === +o.v ? "selected" : ""}>${o.t}</option>`).join("");
+      return `<div class="input-row"><label>${label}</label><select id="${id}" data-scen="${scenarioId}" data-field="${field}">${opts}</select></div>`;
+    }
+    return `<div class="input-row"><label>${label}</label><input id="${id}" data-scen="${scenarioId}" data-field="${field}" type="${type}" value="${value}"/></div>`;
+  }
+  const tenureOpts = [{v:1,t:"1 mo"},{v:3,t:"3 mo"},{v:6,t:"6 mo"},{v:9,t:"9 mo"},{v:12,t:"12 mo"}];
+  const planTenureOpts = [{v:3,t:"3 mo"},{v:6,t:"6 mo"},{v:9,t:"9 mo"},{v:12,t:"12 mo"}];
+
+  function inputsBlock(scenarioId, fieldsHtml) {
+    return `
+      <div class="inputs-block">
+        <div class="inputs-head">
+          <span class="inputs-title">✏️ Scenario inputs (tweak just this card)</span>
+          <button class="reset-btn" onclick="resetScenario('${scenarioId}')">Reset</button>
+        </div>
+        <div class="inputs-grid">${fieldsHtml}</div>
+      </div>
+    `;
+  }
+
+  window.resetScenario = function (scenarioId) {
+    state[scenarioId] = JSON.parse(JSON.stringify(defaults[scenarioId]));
+    renderAll();
+  };
+
+  // ============ Tenure callouts ============
+  function tenureCallout_Monthly() { return `<span class="tenure-callout">Tenure Selected: Monthly (pay-as-you-go)</span>`; }
+  function tenureCallout_Upfront(monthsLeft) { return `<span class="tenure-callout">Balance Tenure: ${monthsLeft} Month${monthsLeft === 1 ? "" : "s"} left</span>`; }
+  function tenureCallout_Mix(monthsLeft) { return `<span class="tenure-callout">Set 1: Monthly · Set 2: ${monthsLeft} Months left</span>`; }
+
+  function cardShell(id, classes, scenarioId, title, tenureCalloutHtml, tags, body, totalVal) {
+    const tagClass = classes.includes('upfront') ? 'upfront' : classes.includes('mix') ? 'mix' : '';
+    const tagsHtml = tags.map(t => `<span class="accordion-tag ${tagClass}">${t}</span>`).join("");
+    const totalStr = totalVal != null ? fmt(totalVal) : '';
+    return `<div class="accordion" id="card-${id}">
+      <button class="accordion-trigger" onclick="toggleAccordion('${id}')">
+        <div class="accordion-trigger-left">
+          <span class="accordion-scenario-id">${scenarioId}</span>
+          <span class="accordion-title">${title}</span>
+          <div class="accordion-meta">${tagsHtml}</div>
+        </div>
+        <div class="accordion-right">
+          ${totalStr ? `<span class="accordion-total">${totalStr}</span>` : ''}
+          <span class="accordion-chev">▾</span>
+        </div>
+      </button>
+      <div class="accordion-body">
+        <div class="card">
+          ${body}
+          ${ctaButton()}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  window.toggleAccordion = function(id) {
+    const el = document.getElementById('card-' + id);
+    // close all others
+    document.querySelectorAll('.accordion.open').forEach(a => {
+      if (a !== el) a.classList.remove('open');
+    });
+    el.classList.toggle('open');
+  };
+
+  // ============ Scenario card builders ============
+  function renderS1() {
+    const g = readGlobal();
+    const s = state.s1;
+    const r = calcS1(s, g);
+    const inpHtml = [
+      inputField("s1", "basePrice", "Base Price (₹/mo)", s.basePrice),
+      inputField("s1", "tenure", "Selected Tenure", s.tenure, "select", tenureOpts),
+      inputField("s1", "monthsUsed", "Months Used", s.monthsUsed),
+      inputField("s1", "cft", "CFT (item)", s.cft),
+      inputField("s1", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+    const openContent = `
+      <div class="item-header"><span>Haven Loft Bi-Sectional - Light Grey</span><span>${fmt(r.total)}</span></div>
+      ${planCalloutRow('monthly')}
+      <div class="row"><span class="lbl">Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.basePrice)}</span>-${fmt(s.basePrice * r.disc)} ${fmt(r.monthly)}</span></div>
+      ${row("Tenure Discount", `${(r.disc * 100).toFixed(0)}% — ${fmt(s.basePrice * r.disc)} off`)}
+      ${row("Total Price (Monthly × Tenure)", r.rental)}
+      <div class="row"><span class="lbl">Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Total Price)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      ${chargesVASBlock(r.vas, r.relocCharged, { relocWaived: r.mtMet, relocTip: r.mtMet ? "₹0 because you've met the minimum tenure (3 months) — Relocation Charges are waived." : "Logistics fee for moving your items to the new location.", fcpTip: "Furlenco Care — service & damage cover for the rented item." })}
+      ${row("Total Cost", r.subtotal)}
+      ${row("GST", r.gst)}
+      ${row("Total Payable", r.total, { bold: true })}
+    `;
+    const body = `
+      ${inputsBlock("s1", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">📦</span><span>Relocation Products</span></div>
+        <div class="product-row">
+          <div>
+            <div class="product-name">Haven Loft Bi-Sectional - Light Grey</div>
+            <div class="product-meta">Same product · today's prices</div>
+          </div>
+          <div class="val">${fmt(r.total)}</div>
+        </div>
+      </div>
+      ${expandable("s1-open", "Per-item drilldown (Open view)", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Price", val: r.rental },
+        { lbl: "Relocation Charges", val: r.relocCharged },
+        { lbl: "Furlenco Care", val: r.vas },
+        { lbl: "Any Other Vas", val: 0, muted: true },
+        { lbl: "Discount Applied", val: r.coupon, discount: true },
+        { lbl: "Subtotal", val: r.subtotal },
+        { lbl: "GST", val: r.gst },
+        { lbl: "Total Payable", val: r.total, bold: true },
+      ])}
+    `;
+    return cardShell("s1", "monthly", "Scenario 1", "Monthly + Relocation",
+      tenureCallout_Monthly(),
+      ["Monthly plan", "Same product", r.mtMet ? "MT met ✓" : "MT not met"], body, r.total);
+  }
+
+  function renderS2() {
+    const g = readGlobal();
+    const s = state.s2;
+    const r = calcS2(s, g);
+    const inpHtml = [
+      inputField("s2", "oldBase", "Old Base (₹/mo)", s.oldBase),
+      inputField("s2", "newBase", "New SKU Base (₹/mo)", s.newBase),
+      inputField("s2", "tenure", "Selected Tenure", s.tenure, "select", tenureOpts),
+      inputField("s2", "monthsUsed", "Months Used", s.monthsUsed),
+      inputField("s2", "cftNew", "CFT (new SKU)", s.cftNew),
+      inputField("s2", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+    const openContent = `
+      <div class="item-header"><span>Upgrade Pair 1</span><span>${fmt(r.total)}</span></div>
+      ${planCalloutRow('monthly')}
+      <div class="product-row"><div class="product-name">Sara Solid Wood Queen Bed <span class="pill pill-delivery">×1 Delivery</span></div></div>
+      <div class="product-row"><div class="product-name">Blanca Queen Bed <span class="pill pill-return">×1 Return</span></div></div>
+      ${row("Old Product Price", fmt(s.oldBase) + "/mo")}
+      ${row("New Product Price", fmt(r.monthlyNew) + "/mo")}
+      <div class="charges-group" style="margin:4px 0">
+        ${row("Total Product Price", r.rental)}
+        <div class="row indent"><span class="lbl">New Product Price × ${s.tenure} month${s.tenure > 1 ? "s" : ""}</span><span class="val">${fmt(r.rental)}</span></div>
+      </div>
+      ${chargesVASBlock(r.vas, r.relocCharged, { relocWaived: r.mtMet, relocCalc: r.relocCalc, relocTip: r.mtMet ? "₹0 — minimum tenure met. Swap fee suppressed in relocation." : "Logistics fee. Swap fee suppressed in relocation orders." })}
+      <div class="row"><span class="lbl">Coupon Code (${g.couponCode}) ${infoIcon(s.couponPct + "% × ₹" + r.rental.toLocaleString("en-IN") + " (Total Product Price)")}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      ${row("Sub Total", r.subtotal)}
+      ${taxSplitBlock(r.gst, r.taxOnProduct, r.taxOnCharges)}
+      ${row("Total Payable with tax", r.total)}
+      ${row("Payable Amount", r.total, { bold: true })}
+    `;
+    const body = `
+      ${inputsBlock("s2", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">⇄</span><span>Upgrade Products</span></div>
+        <div class="product-row">
+          <div>
+            <div class="product-name">Upgrade Pair 1</div>
+            <div class="product-meta">Sara Solid Wood Queen Bed · Blanca Queen Bed</div>
+          </div>
+          <div class="val">${fmt(r.total)}</div>
+        </div>
+      </div>
+      ${expandable("s2-open", "Per-item drilldown (Open view) — with tax split", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Price", val: r.rental },
+        { lbl: "Relocation Charges", val: r.relocCharged },
+        { lbl: "Furlenco Care", val: r.vas },
+        { lbl: "Any Other Vas", val: 0, muted: true },
+        { lbl: "Discount Applied", val: r.coupon, discount: true },
+        { lbl: "Subtotal", val: r.subtotal },
+        { lbl: "GST", val: r.gst },
+        { lbl: "Total Payable", val: r.total, bold: true },
+      ])}
+    `;
+    return cardShell("s2", "monthly", "Scenario 2", "Monthly + Swap",
+      tenureCallout_Monthly(),
+      ["Monthly plan", "New SKU", r.mtMet ? "MT met ✓" : "MT not met"], body, r.total);
+  }
+
+  function renderS3() {
+    const g = readGlobal();
+    const s = state.s3;
+    const r = calcS3(s, g);
+    const inpHtml = [
+      inputField("s3", "basePrice", "Base (snapshot ₹/mo)", s.basePrice),
+      inputField("s3", "planTenure", "Plan Tenure", s.planTenure, "select", planTenureOpts),
+      inputField("s3", "monthsUsed", "Months Used", s.monthsUsed),
+      inputField("s3", "cft", "CFT (item)", s.cft),
+      inputField("s3", "couponPct", "Coupon %", s.couponPct),
+      inputField("s3", "gstPaid", "GST Paid at Plan Start (₹)", s.gstPaid),
+    ].join("");
+
+    // Q1:A — flat lines, no nesting. Q2:C — upfront total formula. Q3:B — credit row shown.
+    const openContent = `
+      <div class="item-header"><span>Andes Relaxed-Depth Sofa - Midnight Blue</span><span>${fmt(r.netPayable)}</span></div>
+      ${planCalloutRow('upfront', s.planTenure)}
+      <div class="row"><span class="lbl">Balance Tenure Left ${infoIcon("Months remaining on your upfront plan.")}</span><span class="val">${r.tenureLeft} Month${r.tenureLeft === 1 ? "" : "s"} left</span></div>
+      ${row("(a) Base Price", s.basePrice)}
+      <div class="row"><span class="lbl">(b) Tenure Discount</span><span class="val">${(r.disc * 100).toFixed(0)}% which is ${fmt(r.tenureDiscValue)}</span></div>
+      ${row("Effective Monthly Rental (a − b)", r.effective)}
+      <div class="row"><span class="lbl">Upfront Total (Effective × Tenure Left) ${infoIcon("Effective Monthly × remaining months = total rental value for balance tenure.")}</span><span class="val">${fmt(r.upfrontTotal)}</span></div>
+      ${chargesVASBlock(r.vas, r.relocCharged, {
+        relocWaived: r.cliffCleared,
+        relocLabel: "Relocation Charges",
+        relocTip: r.cliffCleared ? "₹0 because your cliff period has been cleared." : "Logistics fee for moving items to your new location.",
+        fcpTip: "Furlenco Care — service & damage cover for your rented item."
+      })}
+      <div class="row"><span class="lbl">Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.upfrontTotal.toLocaleString("en-IN")} (Upfront Total) = ${fmt(r.couponRaw)}`)}</span><span class="val discount-val">-${fmt(r.couponRaw)} <span class="coupon-calc-tag">${s.couponPct}% × Upfront Total</span></span></div>
+      ${row("Subtotal", r.subtotalBeforeCredit)}
+      ${row("GST (18%)", r.gst)}
+      ${row("Amount Before Credit", r.totalBeforeCredit)}
+      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon(`Rental carried forward: ${fmt(r.upfrontTotal)} + GST paid at plan start: ${fmt(r.gstPaid)} = ${fmt(r.credit)}. GST read from order record — rate at time of original payment.`)}</span><span class="val discount-val">-${fmt(r.credit)}</span></div>
+      ${row("Total Payable", r.netPayable, { bold: true })}
+    `;
+    const body = `
+      ${inputsBlock("s3", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">📦</span><span>Relocation Products</span></div>
+        <div class="product-row">
+          <div>
+            <div class="product-name">Andes Relaxed-Depth Sofa - Midnight Blue</div>
+            <div class="product-meta">Upfront plan · price protected · balance tenure carries forward</div>
+          </div>
+          <div class="val">${fmt(r.netPayable)}</div>
+        </div>
+      </div>
+      ${expandable("s3-open", "Per-item drilldown (Open view)", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Upfront Total (Effective × Tenure Left)", val: r.upfrontTotal },
+        { lbl: "Relocation Charges", val: r.relocCharged },
+        { lbl: "Furlenco Care", val: r.vas },
+        { lbl: "Any Other VAS", val: 0, muted: true },
+        { lbl: `Coupon (${g.couponCode} — ${s.couponPct}% of Upfront Total)`, val: r.couponRaw, discount: true },
+        { lbl: "Subtotal", val: r.subtotalBeforeCredit },
+        { lbl: "GST (18%)", val: r.gst },
+        { lbl: "Amount Before Credit", val: r.totalBeforeCredit },
+        { lbl: `Balance Tenure Credit (₹${r.upfrontTotal.toLocaleString("en-IN")} rental + ₹${r.gstPaid.toLocaleString("en-IN")} GST paid)`, val: r.credit, discount: true },
+        { lbl: "Total Payable", val: r.netPayable, bold: true },
+      ])}
+    `;
+    return cardShell("s3", "upfront", "Scenario 3", "Upfront + Relocation",
+      tenureCallout_Upfront(r.tenureLeft),
+      ["Upfront plan", "Price protected", r.cliffCleared ? "Cliff cleared ✓" : "Cliff not cleared"], body, r.netPayable);
+  }
+
+  function renderS4() {
+    const g = readGlobal();
+    const s = state.s4;
+    const r = calcS4(s, g);
+    const inpHtml = [
+      inputField("s4", "oldBase", "Old Base (₹/mo)", s.oldBase),
+      inputField("s4", "planTenure", "Old Plan Tenure", s.planTenure, "select", planTenureOpts),
+      inputField("s4", "monthsUsed", "Months Used", s.monthsUsed),
+      inputField("s4", "newBase", "New SKU Base (₹/mo)", s.newBase),
+      inputField("s4", "newTenure", "New Tenure", s.newTenure, "select", tenureOpts),
+      inputField("s4", "cftNew", "CFT (new)", s.cftNew),
+      inputField("s4", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+    const openContent = `
+      <div class="item-header"><span>Upgrade Pair 1</span><span>${fmt(r.netPayable)}</span></div>
+      ${planCalloutRow('upfront', s.planTenure)}
+      <div class="product-row"><div class="product-name">Sara Solid Wood Queen Bed <span class="pill pill-delivery">×1 Delivery</span></div></div>
+      <div class="product-row"><div class="product-name">Blanca Queen Bed <span class="pill pill-return">×1 Return</span></div></div>
+      ${row("Old Product Price", fmt(r.oldEffective) + "/mo")}
+      ${row("New Product Price", fmt(r.newMonthly) + "/mo")}
+      <div class="charges-group" style="margin:4px 0">
+        ${row("Total Product Price", r.newRental)}
+        <div class="row indent"><span class="lbl">New Product Price × ${r.tenureLeft} months</span><span class="val">${fmt(r.newRental)}</span></div>
+      </div>
+      ${chargesVASBlock(r.vas, r.relocCharged, { relocWaived: r.cliffCleared, relocCalc: r.relocCalc, relocTip: r.cliffCleared ? "₹0 — cliff period cleared." : "Logistics fee for moving items to your new location." })}
+      <div class="row"><span class="lbl">Coupon Code (${g.couponCode}) ${infoIcon(s.couponPct + "% × ₹" + r.newRental.toLocaleString("en-IN") + " (Total Product Price)")}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      ${row("Sub Total", r.subtotal)}
+      ${taxSplitBlock(r.gst, r.taxOnProduct, r.taxOnCharges)}
+      ${row("Total Payable with tax", r.totalWithTax)}
+      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Carry-forward value from your old product's remaining tenure, applied against new product cost.")}</span><span class="val discount-val">-${fmt(r.credit)}</span></div>
+      ${row("Payable Amount", r.netPayable, { bold: true })}
+    `;
+    const body = `
+      ${inputsBlock("s4", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">⇄</span><span>Upgrade Products</span></div>
+        <div class="product-row">
+          <div>
+            <div class="product-name">Upgrade Pair 1</div>
+            <div class="product-meta">Upfront swap · carry-forward credit applies</div>
+          </div>
+          <div class="val">${fmt(r.netPayable)}</div>
+        </div>
+      </div>
+      ${expandable("s4-open", "Per-item drilldown (Open view) — with credit + tax split", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Price", val: r.newRental },
+        { lbl: "Relocation Charges", val: r.relocCharged },
+        { lbl: "Furlenco Care", val: r.vas },
+        { lbl: "Any Other Vas", val: 0, muted: true },
+        { lbl: "Discount Applied", val: r.coupon, discount: true },
+        { lbl: "Subtotal", val: r.subtotal },
+        { lbl: "GST", val: r.gst },
+        { lbl: "Total Payable (with tax)", val: r.totalWithTax },
+        { lbl: "Credit", val: r.credit, discount: true },
+        { lbl: "Total Payable", val: r.netPayable, bold: true },
+      ])}
+    `;
+    return cardShell("s4", "upfront", "Scenario 4", "Upfront + Swap",
+      tenureCallout_Upfront(r.tenureLeft),
+      ["Upfront plan", "New SKU", r.cliffCleared ? "Cliff cleared ✓" : "Cliff not cleared"], body, r.netPayable);
+  }
+
+  function renderS5() {
+    const g = readGlobal();
+    const s = state.s5;
+    const r = calcS5(s, g);
+    const inpHtml = [
+      `<div class="input-group-divider">Set 1 — Monthly product</div>`,
+      inputField("s5", "s1_basePrice", "Base (₹/mo)", s.s1_basePrice),
+      inputField("s5", "s1_tenure", "Selected Tenure", s.s1_tenure, "select", tenureOpts),
+      inputField("s5", "s1_monthsUsed", "Months Used", s.s1_monthsUsed),
+      inputField("s5", "s1_cft", "CFT", s.s1_cft),
+      `<div class="input-group-divider">Set 2 — Upfront product</div>`,
+      inputField("s5", "s2_basePrice", "Base (₹/mo)", s.s2_basePrice),
+      inputField("s5", "s2_planTenure", "Plan Tenure", s.s2_planTenure, "select", planTenureOpts),
+      inputField("s5", "s2_monthsUsed", "Months Used", s.s2_monthsUsed),
+      inputField("s5", "s2_cft", "CFT", s.s2_cft),
+      `<div class="input-group-divider">Shared</div>`,
+      inputField("s5", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+    const openContent = `
+      <div class="item-header"><span>Set 1 — Monthly product</span><span>${fmt(r.s1.total)}</span></div>
+      ${row("Tenure Discount", `${(r.s1.disc * 100).toFixed(0)}%`)}
+      ${row("Monthly Rent (post discount)", `${fmt(r.s1.monthly)}/mo`)}
+      ${row("Total Price (Monthly × Tenure)", r.s1.rental)}
+      ${chargesVASBlock(r.s1.vas, r.s1.relocCharged, { relocWaived: r.s1.mtMet })}
+      <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront product</span><span>${fmt(r.s2.total)}</span></div>
+      ${balanceTenureNest("s5-set2", r.s2.tenureLeft, `
+        ${row("(a) Base Price", s.s2_basePrice)}
+        ${row("(b) Tenure Discount (snapshot)", `${(r.s2.disc * 100).toFixed(0)}%`)}
+        ${row("Effective Monthly Tenure", r.s2.effective)}
+        ${row("Rentals for remaining tenure", r.s2.rentalRemaining, { muted: true })}
+        <div class="nest-tip">Your upfront plan covers your rental for these months — relax, this is just for transparency.</div>
+      `, TIPS.balance_tenure_carried_forward)}
+      ${chargesVASBlock(r.s2.vas, r.s2.relocCharged, { relocWaived: r.s2.cliffCleared, relocLabel: "Relocation Charges" })}
+    `;
+    const body = `
+      ${inputsBlock("s5", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">📦</span><span>Relocation Products</span></div>
+        <div class="product-row">
+          <div><div class="product-name">Set 1 — Monthly product</div><div class="product-meta">Today's prices</div></div>
+          <div class="val">${fmt(r.s1.total)}</div>
+        </div>
+        <div class="product-row">
+          <div><div class="product-name">Set 2 — Upfront product</div><div class="product-meta">Price protected · carry-forward</div></div>
+          <div class="val">${fmt(r.s2.total)}</div>
+        </div>
+      </div>
+      ${expandable("s5-open", "Per-item drilldown (Open view) — both sets", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Price", val: r.cartTotalPrice },
+        { lbl: "Relocation Charges", val: r.cartReloc },
+        { lbl: "Furlenco Care", val: r.cartFcp },
+        { lbl: "Any Other Vas", val: 0, muted: true },
+        { lbl: "Discount Applied", val: r.cartCoupon, discount: true },
+        { lbl: "Subtotal", val: r.cartSubtotal },
+        { lbl: "GST", val: r.cartGst },
+        { lbl: "Total Payable", val: r.cartTotal, bold: true },
+      ])}
+    `;
+    return cardShell("s5", "mix", "Scenario 5", "Mix (Monthly + Upfront) + Relocation",
+      tenureCallout_Mix(r.s2_tenureLeft),
+      ["2 sets", "Monthly + Upfront"], body, r.cartTotal);
+  }
+
+  function renderS6() {
+    const g = readGlobal();
+    const s = state.s6;
+    const r = calcS6(s, g);
+    const inpHtml = [
+      `<div class="input-group-divider">Set 1 — Monthly swap</div>`,
+      inputField("s6", "s1_newBase", "New SKU Base", s.s1_newBase),
+      inputField("s6", "s1_tenure", "Selected Tenure", s.s1_tenure, "select", tenureOpts),
+      inputField("s6", "s1_monthsUsed", "Months Used", s.s1_monthsUsed),
+      inputField("s6", "s1_cftNew", "CFT (new)", s.s1_cftNew),
+      `<div class="input-group-divider">Set 2 — Upfront swap</div>`,
+      inputField("s6", "s2_oldBase", "Old Base (₹/mo)", s.s2_oldBase),
+      inputField("s6", "s2_planTenure", "Plan Tenure", s.s2_planTenure, "select", planTenureOpts),
+      inputField("s6", "s2_monthsUsed", "Months Used", s.s2_monthsUsed),
+      inputField("s6", "s2_newBase", "New SKU Base", s.s2_newBase),
+      inputField("s6", "s2_newTenure", "New Tenure", s.s2_newTenure, "select", tenureOpts),
+      inputField("s6", "s2_cftNew", "CFT (new)", s.s2_cftNew),
+      `<div class="input-group-divider">Shared</div>`,
+      inputField("s6", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+    const openContent = `
+      <div class="item-header"><span>Set 1 — Monthly swap</span><span>${fmt(r.s1.total)}</span></div>
+      ${planCalloutRow('monthly')}
+      ${row("Old Product Price", fmt(s.s1_newBase) + "/mo")}
+      ${row("New Product Price", fmt(r.s1.monthlyNew) + "/mo")}
+      <div class="charges-group" style="margin:4px 0">
+        ${row("Total Product Price", r.s1.rental)}
+        <div class="row indent"><span class="lbl">New Product Price × ${s.s1_tenure} month${s.s1_tenure > 1 ? "s" : ""}</span><span class="val">${fmt(r.s1.rental)}</span></div>
+      </div>
+      ${chargesVASBlock(r.s1.vas, r.s1.relocCharged, { relocWaived: r.s1.mtMet, relocCalc: r.s1.relocCalc, relocTip: r.s1.mtMet ? "₹0 — MT met." : "Logistics fee." })}
+      ${row("Sub Total", r.s1.subtotal)}
+      ${taxSplitBlock(r.s1.gst, r.s1.taxOnProduct, r.s1.taxOnCharges)}
+      ${row("Total Payable with tax", r.s1.total)}
+      ${row("Payable Amount", r.s1.total, { bold: true })}
+
+      <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront swap</span><span>${fmt(r.s2.netPayable)}</span></div>
+      ${planCalloutRow('upfront', s.s2_planTenure)}
+      ${row("Old Product Price", fmt(r.s2.oldEffective) + "/mo")}
+      ${row("New Product Price", fmt(r.s2.newMonthly) + "/mo")}
+      <div class="charges-group" style="margin:4px 0">
+        ${row("Total Product Price", r.s2.newRental)}
+        <div class="row indent"><span class="lbl">New Product Price × ${r.s2.tenureLeft} months</span><span class="val">${fmt(r.s2.newRental)}</span></div>
+      </div>
+      ${chargesVASBlock(r.s2.vas, r.s2.relocCharged, { relocWaived: r.s2.cliffCleared, relocCalc: r.s2.relocCalc, relocTip: r.s2.cliffCleared ? "₹0 — cliff cleared." : "Logistics fee." })}
+      ${row("Sub Total", r.s2.subtotal)}
+      ${taxSplitBlock(r.s2.gst, r.s2.taxOnProduct, r.s2.taxOnCharges)}
+      ${row("Total Payable with tax", r.s2.totalWithTax)}
+      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Carry-forward from old product's remaining tenure.")}</span><span class="val discount-val">-${fmt(r.s2.credit)}</span></div>
+      ${row("Payable Amount", r.s2.netPayable, { bold: true })}
+    `;
+    const body = `
+      ${inputsBlock("s6", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">⇄</span><span>Upgrade Products</span></div>
+        <div class="product-row">
+          <div><div class="product-name">Set 1 — Monthly swap</div><div class="product-meta">Today's prices · new SKU</div></div>
+          <div class="val">${fmt(r.s1.total)}</div>
+        </div>
+        <div class="product-row">
+          <div><div class="product-name">Set 2 — Upfront swap</div><div class="product-meta">Carry-forward credit applies</div></div>
+          <div class="val">${fmt(r.s2.netPayable)}</div>
+        </div>
+      </div>
+      ${expandable("s6-open", "Per-item drilldown (Open view) — both sets + credit", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Price", val: r.cartTotalPrice },
+        { lbl: "Relocation Charges", val: r.cartReloc },
+        { lbl: "Furlenco Care", val: r.cartFcp },
+        { lbl: "Any Other Vas", val: 0, muted: true },
+        { lbl: "Discount Applied", val: r.cartCoupon, discount: true },
+        { lbl: "Subtotal", val: r.cartSubtotal },
+        { lbl: "GST", val: r.cartGst },
+        { lbl: "Total Payable (with tax)", val: r.cartTotalWithTax },
+        { lbl: "Credit", val: r.totalCredit, discount: true },
+        { lbl: "Total Payable", val: r.cartNetPayable, bold: true },
+      ])}
+    `;
+    return cardShell("s6", "mix", "Scenario 6", "Mix (Monthly + Upfront) + Swap",
+      tenureCallout_Mix(r.s2.tenureLeft),
+      ["2 sets", "Both swap", "Credit applies"], body, r.cartNetPayable);
+  }
+
+
+  // ============ Scenario 7: 2 Relocations (1 Monthly + 1 Upfront) + 2 Swaps (1 Monthly + 1 Upfront) ============
+  function calcS7(s, g) {
+    // R1 — Monthly relocation
+    const r1 = calcS1({ basePrice: s.r1_base, tenure: s.r1_tenure, monthsUsed: s.r1_monthsUsed, cft: s.r1_cft, couponPct: s.couponPct }, g);
+    // R2 — Upfront relocation
+    const r2 = calcS3({ basePrice: s.r2_base, planTenure: s.r2_planTenure, monthsUsed: s.r2_monthsUsed, cft: s.r2_cft, couponPct: s.couponPct, gstPaid: s.r2_gstPaid }, g);
+    // SW1 — Monthly swap
+    const sw1 = calcS2({ oldBase: s.sw1_newBase, newBase: s.sw1_newBase, tenure: s.sw1_tenure, monthsUsed: s.sw1_monthsUsed, cftNew: s.sw1_cftNew, couponPct: s.couponPct }, g);
+    // SW2 — Upfront swap
+    const sw2 = calcS4({ oldBase: s.sw2_oldBase, planTenure: s.sw2_planTenure, monthsUsed: s.sw2_monthsUsed, newBase: s.sw2_newBase, newTenure: s.sw2_newTenure, cftNew: s.sw2_cftNew, couponPct: s.couponPct }, g);
+
+    // Cart-level totals
+    const cartRental = r1.rental + sw1.rental + sw2.newRental;
+    const cartReloc = r1.relocCharged + r2.relocCharged + sw1.relocCharged + sw2.relocCharged;
+    const cartVas = r1.vas + r2.vas + sw1.vas + sw2.vas;
+    const cartCoupon = r1.coupon + r2.couponRaw + sw1.coupon + sw2.coupon;
+    const cartSubtotal = cartRental + cartReloc + cartVas - cartCoupon + r2.upfrontTotal - r2.couponRaw;
+    const cartGst = r1.gst + r2.gst + sw1.gst + sw2.gst;
+    const totalCredit = r2.credit + sw2.credit;
+    const cartTotalWithTax = cartSubtotal + cartGst;
+    const cartNetPayable = Math.max(cartTotalWithTax - totalCredit, 0);
+
+    return { r1, r2, sw1, sw2, cartRental, cartReloc, cartVas, cartCoupon, cartSubtotal, cartGst, totalCredit, cartTotalWithTax, cartNetPayable };
+  }
+
+  function renderS7() {
+    const g = readGlobal();
+    const s = state.s7;
+    const r = calcS7(s, g);
+
+    const inpHtml = [
+      `<div class="input-group-divider">Relocation 1 — Monthly</div>`,
+      inputField("s7", "r1_base", "Base (₹/mo)", s.r1_base),
+      inputField("s7", "r1_tenure", "Tenure", s.r1_tenure, "select", tenureOpts),
+      inputField("s7", "r1_monthsUsed", "Months Used", s.r1_monthsUsed),
+      inputField("s7", "r1_cft", "CFT", s.r1_cft),
+      `<div class="input-group-divider">Relocation 2 — Upfront</div>`,
+      inputField("s7", "r2_base", "Base (₹/mo)", s.r2_base),
+      inputField("s7", "r2_planTenure", "Plan Tenure", s.r2_planTenure, "select", planTenureOpts),
+      inputField("s7", "r2_monthsUsed", "Months Used", s.r2_monthsUsed),
+      inputField("s7", "r2_cft", "CFT", s.r2_cft),
+      inputField("s7", "r2_gstPaid", "GST Paid at Start (₹)", s.r2_gstPaid),
+      `<div class="input-group-divider">Swap 1 — Monthly</div>`,
+      inputField("s7", "sw1_newBase", "New SKU Base (₹/mo)", s.sw1_newBase),
+      inputField("s7", "sw1_tenure", "Tenure", s.sw1_tenure, "select", tenureOpts),
+      inputField("s7", "sw1_monthsUsed", "Months Used", s.sw1_monthsUsed),
+      inputField("s7", "sw1_cftNew", "CFT (new)", s.sw1_cftNew),
+      `<div class="input-group-divider">Swap 2 — Upfront</div>`,
+      inputField("s7", "sw2_oldBase", "Old Base (₹/mo)", s.sw2_oldBase),
+      inputField("s7", "sw2_planTenure", "Plan Tenure", s.sw2_planTenure, "select", planTenureOpts),
+      inputField("s7", "sw2_monthsUsed", "Months Used", s.sw2_monthsUsed),
+      inputField("s7", "sw2_newBase", "New SKU Base (₹/mo)", s.sw2_newBase),
+      inputField("s7", "sw2_newTenure", "New Tenure", s.sw2_newTenure, "select", tenureOpts),
+      inputField("s7", "sw2_cftNew", "CFT (new)", s.sw2_cftNew),
+      inputField("s7", "sw2_gstPaid", "GST Paid at Start (₹)", s.sw2_gstPaid),
+      `<div class="input-group-divider">Shared</div>`,
+      inputField("s7", "couponPct", "Coupon %", s.couponPct),
+    ].join("");
+
+    // Per-set drilldown
+    const openContent = `
+      <!-- R1: Monthly Relocation -->
+      <div class="item-header"><span>Set R1 — Monthly Relocation</span><span>${fmt(r.r1.total)}</span></div>
+      ${planCalloutRow('monthly')}
+      ${row("Base Price", s.r1_base)}
+      ${row("Tenure Discount", (r.r1.disc*100).toFixed(0) + "% — " + fmt(s.r1_base * r.r1.disc) + " off")}
+      ${row("Monthly Rental", fmt(r.r1.monthly) + "/mo")}
+      ${row("Total Price (Monthly × Tenure)", r.r1.rental)}
+      ${chargesVASBlock(r.r1.vas, r.r1.relocCharged, { relocWaived: r.r1.mtMet, relocTip: r.r1.mtMet ? "₹0 — minimum tenure met." : "Logistics fee." })}
+      <div class="row"><span class="lbl">Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r1.coupon)}</span></div>
+      ${row("Subtotal", r.r1.subtotal)}
+      ${row("GST", r.r1.gst)}
+      ${row("Set R1 Total", r.r1.total, { bold: true })}
+
+      <!-- R2: Upfront Relocation -->
+      <div class="item-header" style="margin-top:14px"><span>Set R2 — Upfront Relocation</span><span>${fmt(r.r2.netPayable)}</span></div>
+      ${planCalloutRow('upfront', s.r2_planTenure)}
+      ${row("Balance Tenure Left", r.r2.tenureLeft + " months")}
+      ${row("(a) Base Price", s.r2_base)}
+      <div class="row"><span class="lbl">(b) Tenure Discount</span><span class="val">${(r.r2.disc*100).toFixed(0)}% which is ${fmt(r.r2.tenureDiscValue)}</span></div>
+      ${row("Effective Monthly Rental (a − b)", r.r2.effective)}
+      ${row("Upfront Total (Effective × Tenure Left)", r.r2.upfrontTotal)}
+      ${chargesVASBlock(r.r2.vas, r.r2.relocCharged, { relocWaived: r.r2.cliffCleared, relocTip: r.r2.cliffCleared ? "₹0 — cliff cleared." : "Logistics fee." })}
+      <div class="row"><span class="lbl">Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r2.couponRaw)}</span></div>
+      ${row("Subtotal", r.r2.subtotalBeforeCredit)}
+      ${row("GST", r.r2.gst)}
+      ${row("Amount Before Credit", r.r2.totalBeforeCredit)}
+      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Rental ₹" + r.r2.upfrontTotal.toLocaleString("en-IN") + " + GST paid at plan start ₹" + r.r2.gstPaid.toLocaleString("en-IN"))}</span><span class="val discount-val">-${fmt(r.r2.credit)}</span></div>
+      ${row("Set R2 Total", r.r2.netPayable, { bold: true })}
+
+      <!-- SW1: Monthly Swap -->
+      <div class="item-header" style="margin-top:14px"><span>Set SW1 — Monthly Swap</span><span>${fmt(r.sw1.total)}</span></div>
+      ${planCalloutRow('monthly')}
+      ${row("Tenure Discount (new SKU)", (r.sw1.disc*100).toFixed(0) + "%")}
+      ${row("Monthly Rental", fmt(r.sw1.monthlyNew) + "/mo")}
+      ${row("Total Price (Monthly × Tenure)", r.sw1.rental)}
+      ${chargesVASBlock(r.sw1.vas, r.sw1.relocCharged, { relocWaived: r.sw1.mtMet, relocTip: r.sw1.mtMet ? "₹0 — MT met." : "Logistics fee. Swap fee suppressed." })}
+      <div class="row"><span class="lbl">Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw1.coupon)}</span></div>
+      ${row("Subtotal", r.sw1.subtotal)}
+      ${taxSplitBlock(r.sw1.gst, r.sw1.taxOnProduct, r.sw1.taxOnCharges)}
+      ${row("Set SW1 Total", r.sw1.total, { bold: true })}
+
+      <!-- SW2: Upfront Swap -->
+      <div class="item-header" style="margin-top:14px"><span>Set SW2 — Upfront Swap</span><span>${fmt(r.sw2.netPayable)}</span></div>
+      ${planCalloutRow('upfront', s.sw2_planTenure)}
+      ${row("Old Tenure Discount (snapshot)", (r.sw2.oldDisc*100).toFixed(0) + "%")}
+      ${row("Old product price (Pretax)", fmt(r.sw2.oldEffective) + "/mo")}
+      ${row("New Tenure Discount", (r.sw2.newDisc*100).toFixed(0) + "%")}
+      ${row("New Product Price (Pretax)", fmt(r.sw2.newMonthly) + "/mo")}
+      ${row("PLP Delta (Pretax)", fmt(r.sw2.plpDelta) + "/mo")}
+      ${row("Tenure left", r.sw2.tenureLeft + " months")}
+      ${row("Total Price (new × tenure)", r.sw2.newRental)}
+      ${chargesVASBlock(r.sw2.vas, r.sw2.relocCharged, { relocWaived: r.sw2.cliffCleared, relocTip: r.sw2.cliffCleared ? "₹0 — cliff cleared." : "Logistics fee." })}
+      <div class="row"><span class="lbl">Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw2.coupon)}</span></div>
+      ${row("Subtotal", r.sw2.subtotal)}
+      ${taxSplitBlock(r.sw2.gst, r.sw2.taxOnProduct, r.sw2.taxOnCharges)}
+      ${row("Total with tax", r.sw2.totalWithTax)}
+      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Rental ₹" + r.sw2.credit.toLocaleString("en-IN") + " (includes GST paid at plan start)")}</span><span class="val discount-val">-${fmt(r.sw2.credit)}</span></div>
+      ${row("Set SW2 Total", r.sw2.netPayable, { bold: true })}
+    `;
+
+    const body = `
+      ${inputsBlock("s7", inpHtml)}
+      <div class="section">
+        <div class="section-title"><span class="dot">📦</span><span>All Sets</span></div>
+        <div class="product-row"><div><div class="product-name">R1 — Monthly Relocation <span class="pill pill-delivery">Monthly</span></div><div class="product-meta">Same product · today's prices</div></div><div class="val">${fmt(r.r1.total)}</div></div>
+        <div class="product-row"><div><div class="product-name">R2 — Upfront Relocation <span class="pill" style="background:#E8F4FF;color:#1A5FA8">Upfront</span></div><div class="product-meta">Price protected · balance tenure carries</div></div><div class="val">${fmt(r.r2.netPayable)}</div></div>
+        <div class="product-row"><div><div class="product-name">SW1 — Monthly Swap <span class="pill pill-delivery">Monthly</span></div><div class="product-meta">New SKU · today's prices</div></div><div class="val">${fmt(r.sw1.total)}</div></div>
+        <div class="product-row"><div><div class="product-name">SW2 — Upfront Swap <span class="pill" style="background:#E8F4FF;color:#1A5FA8">Upfront</span></div><div class="product-meta">Carry-forward credit applies</div></div><div class="val">${fmt(r.sw2.netPayable)}</div></div>
+      </div>
+      ${expandable("s7-open", "Per-set drilldown (all 4 sets)", openContent)}
+      ${totalPayableAmountBlock([
+        { lbl: "Total Rental (Monthly sets)", val: r.r1.rental + r.sw1.rental },
+        { lbl: "Total Upfront Rental", val: r.r2.upfrontTotal + r.sw2.newRental },
+        { lbl: "Relocation Charges (all sets)", val: r.cartReloc },
+        { lbl: "Furlenco Care (all sets)", val: r.cartVas },
+        { lbl: "Coupons Applied", val: r.cartCoupon, discount: true },
+        { lbl: "GST (all sets)", val: r.cartGst },
+        { lbl: "Total Before Credit", val: r.cartTotalWithTax },
+        { lbl: "Balance Tenure Credit (R2 + SW2)", val: r.totalCredit, discount: true },
+        { lbl: "Total Payable", val: r.cartNetPayable, bold: true },
+      ])}
+    `;
+    return cardShell("s7", "mix", "Scenario 7",
+      "2 Relocations + 2 Swaps (Monthly & Upfront)",
+      '', ["2 Relocations", "2 Swaps", "Monthly + Upfront", "Credit applies"], body, r.cartNetPayable);
+  }
+
+  // ============ Master render ============
+  function renderAll() {
+    const grid = document.getElementById("grid");
+    // Preserve open/closed state of drilldowns
+    const openSecs = new Set();
+    document.querySelectorAll(".chev.open").forEach(c => openSecs.add(c.id.replace("chev-", "")));
+    // Preserve focus
+    const focusedEl = document.activeElement;
+    const focusId = focusedEl && focusedEl.id ? focusedEl.id : null;
+    const focusStart = focusedEl && focusedEl.selectionStart != null ? focusedEl.selectionStart : null;
+
+    grid.innerHTML = [renderS1(), renderS2(), renderS3(), renderS4(), renderS5(), renderS6(), renderS7()].join("");
+
+    // Wire up per-scenario input listeners
+    document.querySelectorAll(".inputs-block input, .inputs-block select").forEach(el => {
+      el.addEventListener("input", onScenarioInputChange);
+      el.addEventListener("change", onScenarioInputChange);
+    });
+
+    // Restore drilldown state
+    openSecs.forEach(k => {
+      const body = document.getElementById("body-" + k);
+      const chev = document.getElementById("chev-" + k);
+      if (body && chev) { body.style.display = ""; chev.classList.add("open"); }
+    });
+
+    // Restore focus + caret
+    if (focusId) {
+      const el = document.getElementById(focusId);
+      if (el) {
+        el.focus();
+        if (focusStart != null && el.setSelectionRange) {
+          try { el.setSelectionRange(focusStart, focusStart); } catch (e) {}
+        }
+      }
+    }
+  }
+
+  function onScenarioInputChange(e) {
+    const el = e.target;
+    const sid = el.dataset.scen;
+    const field = el.dataset.field;
+    if (!sid || !field) return;
+    const v = el.tagName === "SELECT" ? +el.value : (el.type === "number" ? +el.value : el.value);
+    state[sid][field] = v;
+    renderAll();
+  }
+
+  // Global controls (just re-render all on change)
+  document.querySelectorAll(".global-controls input").forEach(el => {
+    el.addEventListener("input", renderAll);
+    el.addEventListener("change", renderAll);
+  });
+
+  renderAll();
+</script>
+
+</body>
+</html>
