@@ -504,12 +504,13 @@
     const open=`
       <div class="item-header"><span>Haven Loft Bi-Sectional - Light Grey</span><span>${fmt(r.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(a) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.basePrice)}</span> ${fmt(r.monthly)}/mo</span></div>
-      ${row("(b) Tenure Discounts",`-${fmt(s.basePrice*r.disc)} (${(r.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.monthly)}/mo`)}
-      ${row("(d) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.subtotalCD)}
-      <div class="row"><span class="lbl">(f) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.basePrice)}</span><span style="color:var(--green);margin:0 4px">-${(r.disc*100).toFixed(0)}%</span>${fmt(r.monthly)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.vas)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.monthly + r.vas/s.tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.basePrice*r.disc*s.tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.subtotalCD)}
+      <div class="row"><span class="lbl">(F) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
       ${chargesVASBlock(r.vas,r.relocCharged,{relocWaived:r.mtMet,relocSubLabel:"Relocation Charges"})}
       ${row("Total Cost",r.totalCost)}
       ${row("GST",r.gst)}
@@ -556,12 +557,13 @@
       ${planCalloutRow('monthly')}
       <div class="product-row"><div class="product-name">Sara Solid Wood Queen Bed <span class="pill pill-delivery">×1 Delivery</span></div></div>
       <div class="product-row"><div class="product-name">Blanca Queen Bed <span class="pill pill-return">×1 Return</span></div></div>
-      <div class="row"><span class="lbl">(a) Base Rental Cost</span><span class="val">${fmt(s.newBase)}/mo</span></div>
-      ${row("(b) Tenure Discounts",`-${fmt(s.newBase*r.disc)} (${(r.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.monthlyNew)}/mo`)}
-      ${row("(d) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.rental)}
-      <div class="row"><span class="lbl">(f) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.disc*100).toFixed(0)}%</span>${fmt(r.monthlyNew)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.vas/s.tenure)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.monthlyNew + r.vas/s.tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.newBase*r.disc*s.tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.rental)}
+      <div class="row"><span class="lbl">(F) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
       ${chargesVASBlock(r.vas,r.relocCharged,{relocWaived:r.mtMet,relocSubLabel:"Relocation Charges"})}
       ${row("Total Cost",r.subtotal)}
       ${taxSplitBlock(r.gst,r.taxOnProduct,r.taxOnCharges)}
@@ -727,11 +729,12 @@
     const open=`
       <div class="item-header"><span>Set 1 — Monthly product</span><span>${fmt(r.s1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      ${row("(a) Base Rental Cost",`${fmt(r.s1.monthly)}/mo`)}
-      ${row("(b) Tenure Discounts",`-${fmt(r.s1.monthly/(1-r.s1.disc)*r.s1.disc)} (${(r.s1.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.s1.monthly)}/mo`)}
-      ${row("(d) Tenure Selected",`${state.s5.s1_tenure} Month${state.s5.s1_tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.s1.rental)}
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.s1_basePrice)}</span><span style="color:var(--green);margin:0 4px">-${(r.s1.disc*100).toFixed(0)}%</span>${fmt(r.s1.monthly)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.s1.vas/state.s5.s1_tenure)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.s1.monthly + r.s1.vas/state.s5.s1_tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.s1_basePrice*r.s1.disc*state.s5.s1_tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${state.s5.s1_tenure} Month${state.s5.s1_tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.s1.rental)}
       ${chargesVASBlock(r.s1.vas,r.s1.relocCharged,{relocWaived:r.s1.mtMet,relocSubLabel:"Relocation Charges"})}
       <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront product</span><span>${fmt(r.s2.netPayable)}</span></div>
       ${planCalloutRow('upfront',state.s5.s2_planTenure)}
@@ -789,11 +792,12 @@
     const open=`
       <div class="item-header"><span>Set 1 — Monthly swap</span><span>${fmt(r.s1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      ${row("(a) Base Rental Cost",`${fmt(s.s1_newBase)}/mo`)}
-      ${row("(b) Tenure Discounts",`-${fmt(s.s1_newBase*r.s1.disc)} (${(r.s1.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.s1.monthlyNew)}/mo`)}
-      ${row("(d) Tenure Selected",`${s.s1_tenure} Month${s.s1_tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.s1.rental)}
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.s1_newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.s1.disc*100).toFixed(0)}%</span>${fmt(r.s1.monthlyNew)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.s1.vas/s.s1_tenure)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.s1.monthlyNew + r.s1.vas/s.s1_tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.s1_newBase*r.s1.disc*s.s1_tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${s.s1_tenure} Month${s.s1_tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.s1.rental)}
       ${chargesVASBlock(r.s1.vas,r.s1.relocCharged,{relocWaived:r.s1.mtMet,relocSubLabel:"Relocation Charges"})}
       <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront swap</span><span>${fmt(r.s2.netPayable)}</span></div>
       ${planCalloutRow('upfront',s.s2_planTenure)}
@@ -864,13 +868,14 @@
       <!-- R1: Monthly Relocation -->
       <div class="item-header"><span>Set R1 — Monthly Relocation</span><span>${fmt(r.r1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      ${row("(a) Base Rental Cost",`${fmt(s.r1_base)}/mo`)}
-      ${row("(b) Tenure Discounts",`-${fmt(s.r1_base*r.r1.disc)} (${(r.r1.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.r1.monthly)}/mo`)}
-      ${row("(d) Tenure Selected",`${s.r1_tenure} Month${s.r1_tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.r1.rental)}
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.r1_base)}</span><span style="color:var(--green);margin:0 4px">-${(r.r1.disc*100).toFixed(0)}%</span>${fmt(r.r1.monthly)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.r1.vas/s.r1_tenure)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.r1.monthly + r.r1.vas/s.r1_tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.r1_base*r.r1.disc*s.r1_tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${s.r1_tenure} Month${s.r1_tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.r1.rental)}
       ${chargesVASBlock(r.r1.vas,r.r1.relocCharged,{relocWaived:r.r1.mtMet,relocSubLabel:"Relocation Charges"})}
-      <div class="row"><span class="lbl">(f) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r1.coupon)}</span></div>
+      <div class="row"><span class="lbl">(F) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r1.coupon)}</span></div>
       ${row("Total Cost",r.r1.totalCost)}
       ${row("GST",r.r1.gst)}
       ${row("Set R1 Total",r.r1.total,{bold:true})}
@@ -894,13 +899,14 @@
       <!-- SW1: Monthly Swap -->
       <div class="item-header" style="margin-top:14px"><span>Set SW1 — Monthly Swap</span><span>${fmt(r.sw1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      ${row("(a) Base Rental Cost",`${fmt(s.sw1_newBase)}/mo`)}
-      ${row("(b) Tenure Discounts",`-${fmt(s.sw1_newBase*r.sw1.disc)} (${(r.sw1.disc*100).toFixed(0)}% off)`)}
-      ${row("(c) Base Rental Cost",`${fmt(r.sw1.monthlyNew)}/mo`)}
-      ${row("(d) Tenure Selected",`${s.sw1_tenure} Month${s.sw1_tenure===1?"":"s"}`)}
-      ${row("(e) Subtotal (c×d)",r.sw1.rental)}
+      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.sw1_newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.sw1.disc*100).toFixed(0)}%</span>${fmt(r.sw1.monthlyNew)}/mo</span></div>
+      ${row("(B) Furlenco Care",`${fmt(r.sw1.vas/s.sw1_tenure)}/mo`)}
+      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.sw1.monthlyNew + r.sw1.vas/s.sw1_tenure)}/mo`)}
+      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.sw1_newBase*r.sw1.disc*s.sw1_tenure)}</span><span class="val"></span></div>
+      ${row("(D) Tenure Selected",`${s.sw1_tenure} Month${s.sw1_tenure===1?"":"s"}`)}
+      ${row("(E) Subtotal (C × D)",r.sw1.rental)}
       ${chargesVASBlock(r.sw1.vas,r.sw1.relocCharged,{relocWaived:r.sw1.mtMet,relocSubLabel:"Relocation Charges"})}
-      <div class="row"><span class="lbl">(f) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw1.coupon)}</span></div>
+      <div class="row"><span class="lbl">(F) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw1.coupon)}</span></div>
       ${row("Total Cost",r.sw1.subtotal)}
       ${taxSplitBlock(r.sw1.gst,r.sw1.taxOnProduct,r.sw1.taxOnCharges)}
       ${row("Set SW1 Total",r.sw1.total,{bold:true})}
