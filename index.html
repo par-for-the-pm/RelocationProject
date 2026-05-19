@@ -986,7 +986,7 @@
       const el=document.getElementById(fid);
       if(el){el.focus();if(fst!=null&&el.setSelectionRange)try{el.setSelectionRange(fst,fst);}catch(e){}}
     }
-    window.scrollTo(0,scrollY);
+    requestAnimationFrame(()=>window.scrollTo(0,scrollY));
   }
   function onScenarioInputChange(e){
     const el=e.target,sid=el.dataset.scen,field=el.dataset.field;
