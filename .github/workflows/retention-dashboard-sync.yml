@@ -1,0 +1,55 @@
+name: Retention Dashboard Daily Sync
+
+on:
+  # 05:30 UTC = 11:00 AM IST
+  schedule:
+    - cron: "30 5 * * *"
+
+  # Manual trigger from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (fetch only, do not write to sheet)"
+        required: false
+        default: "false"
+
+jobs:
+  sync:
+    name: Sync metrics → Google Sheet
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: retention_dashboard/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r retention_dashboard/requirements.txt
+
+      - name: Run sync
+        env:
+          REDSHIFT_HOST:      ${{ secrets.REDSHIFT_HOST }}
+          REDSHIFT_PORT:      ${{ secrets.REDSHIFT_PORT }}
+          REDSHIFT_DB:        ${{ secrets.REDSHIFT_DB }}
+          REDSHIFT_USER:      ${{ secrets.REDSHIFT_USER }}
+          REDSHIFT_PASSWORD:  ${{ secrets.REDSHIFT_PASSWORD }}
+          GOOGLE_SHEET_ID:    ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          ALERT_EMAIL:        ${{ secrets.ALERT_EMAIL }}
+          SMTP_HOST:          ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:          ${{ secrets.SMTP_PORT }}
+          SMTP_USER:          ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD:      ${{ secrets.SMTP_PASSWORD }}
+        run: python retention_dashboard/sync.py
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Sync failed. Check the logs above."
+          echo "If ALERT_EMAIL is set, an email was sent by the script."
