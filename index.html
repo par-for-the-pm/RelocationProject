@@ -45,7 +45,7 @@
   .global-controls .ctl input { padding: 6px 8px; font-size: 13px; border: 1px solid #D7DCE3; border-radius: 6px; background: #FFF; font-family: inherit; color: var(--ink); }
   .global-controls .global-label { font-size: 11px; color: var(--ink-3); margin-right: 6px; align-self: center; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
   .grid { display: flex; flex-direction: column; gap: 0; padding: 12px 0 60px; max-width: 600px; margin: 0 auto; }
-  .accordion { border-bottom: 1px solid var(--line); background: var(--card); }
+  .accordion { border-bottom: 3px solid var(--line); background: var(--card); margin-bottom: 0; }
   .accordion-trigger { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; cursor: pointer; user-select: none; background: var(--card); border: none; width: 100%; text-align: left; }
   .accordion-trigger:active { background: #F5F7F9; }
   .accordion-trigger-left { display: flex; flex-direction: column; gap: 4px; }
@@ -58,9 +58,10 @@
   .accordion-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
   .accordion-total { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
   .accordion-chev { font-size: 18px; color: var(--ink-3); transition: transform 0.2s; line-height: 1; }
-  .accordion.open .accordion-chev { transform: rotate(180deg); }
-  .accordion-body { display: none; border-top: 1px solid var(--line); }
-  .accordion.open .accordion-body { display: block; }
+  .accordion .accordion-chev { transform: rotate(180deg); }
+  .accordion.closed .accordion-chev { transform: rotate(0deg); }
+  .accordion-body { display: block; border-top: 1px solid var(--line); }
+  .accordion.closed .accordion-body { display: none; }
   .card { background: var(--card); overflow: hidden; display: flex; flex-direction: column; }
   .card-head { background: var(--teal); color: #FFF; padding: 14px 18px; }
   .tenure-callout { display: inline-block; background: rgba(255,255,255,0.22); color: #FFF; font-size: 12.5px; padding: 4px 10px; border-radius: 14px; font-weight: 600; margin-top: 8px; }
@@ -78,10 +79,11 @@
   .input-group-divider:first-child { border-top: none; margin-top: 0; }
   .section { padding: 12px 16px; border-bottom: 1px solid var(--line); }
   .section:last-of-type { border-bottom: none; }
-  .section-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--teal); }
-  .section-title .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--teal-soft); display: inline-flex; align-items: center; justify-content: center; color: var(--teal); font-size: 11px; }
-  .chev { font-size: 14px; color: var(--ink-3); transition: transform 0.15s; }
+  .section-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: var(--teal-soft); border-radius: 6px; padding: 8px 10px; margin: 4px 0; }
+  .section-head:hover { background: #C5E8E6; }
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--teal-dark); }
+  .section-title .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--teal); display: inline-flex; align-items: center; justify-content: center; color: #FFF; font-size: 11px; }
+  .chev { font-size: 14px; color: var(--teal-dark); font-weight: 700; transition: transform 0.15s; }
   .chev.open { transform: rotate(180deg); }
   .product-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
   .product-name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
@@ -122,6 +124,32 @@
   .tax-group { background: #F4F7F8; border-radius: 6px; padding: 4px 10px; margin: 4px 0; }
   .total-payable-amount { background: linear-gradient(180deg, #F8FBFB 0%, #FFFFFF 100%); padding: 16px 18px; }
   .total-payable-amount .section-title { color: var(--ink); }
+  .payable-bar-wrap { border-top: 2px solid var(--line); }
+  .payable-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #F8FBFB; cursor: pointer; user-select: none; }
+  .payable-bar:hover { background: #EFF5F5; }
+  .payable-bar-label { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .payable-bar-right { display: flex; align-items: center; gap: 8px; }
+  .payable-bar-total { font-size: 15px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .payable-bar-chev { font-size: 13px; color: var(--ink-3); transition: transform 0.15s; display: inline-block; }
+  .payable-bar-chev.open { transform: rotate(0deg); }
+  .payable-bar-body { padding: 8px 18px 12px; background: #FFFFFF; }
+  .payable-bar-body .row .lbl { color: var(--ink-3); font-size: 13px; }
+  .payable-bar-body .row .val { color: var(--ink-3); font-size: 13px; }
+  .payable-bar-body .row.bold .lbl { color: var(--ink); font-size: 14.5px; }
+  .payable-bar-body .row.bold .val { color: var(--ink); font-size: 14.5px; }
+  .payable-bar-body .discount-val { color: var(--green); }
+  .dev-notes { background: #1A1F2E; border-radius: 0; padding: 14px 18px; }
+  .dev-notes-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .dev-notes-title { font-size: 11px; font-weight: 700; color: #7DD3CC; text-transform: uppercase; letter-spacing: 0.08em; }
+  .dev-notes-chev { font-size: 12px; color: #4A5568; transition: transform 0.15s; }
+  .dev-notes-chev.open { transform: rotate(180deg); }
+  .dev-notes-body { display: none; margin-top: 10px; }
+  .dev-notes-body.open { display: block; }
+  .dev-note { font-size: 12px; color: #A0AEC0; line-height: 1.6; padding: 4px 0; border-bottom: 1px solid #2D3748; }
+  .dev-note:last-child { border-bottom: none; }
+  .dev-note b { color: #F6E05E; font-weight: 600; }
+  .dev-note .warn { color: #FC8181; font-weight: 600; }
+  .dev-note code { background: #2D3748; color: #68D391; padding: 1px 5px; border-radius: 3px; font-size: 11px; font-family: monospace; }
   .cta { width: 100%; padding: 14px; background: var(--teal); color: #FFF; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.12s; }
   .cta:hover { background: var(--teal-dark); }
   .footer { padding: 24px 28px 50px; color: var(--ink-3); font-size: 12px; max-width: 900px; }
@@ -357,12 +385,12 @@
     const showWaiver=opts.relocWaived;
     const relocTipIcon=" "+infoIcon(TIPS.relocation_charges);
     const vasLabel=opts.vasLabel||"Furlenco Care";
-    const relocSubLabel=opts.relocSubLabel||opts.relocLabel||"Relocation Charges";
+    const relocSubLabel=opts.relocSubLabel||opts.relocLabel||"Relocation charges";
     return`
       <div class="charges-group">
         ${row("(g) Charges and VAS",vas+reloc)}
         <div class="row indent"><span class="lbl">${vasLabel}</span><span class="val">${fmt(vas)}</span></div>
-        <div class="row indent"><span class="lbl">${relocSubLabel}${relocTipIcon}</span><span class="val">${fmt(reloc)} ${showWaiver?waiverTag():""}</span></div>
+        <div class="row indent"><span class="lbl">${relocSubLabel}${relocTipIcon}</span><span class="val">${showWaiver?`₹0 ${waiverTag()}`:fmt(reloc)}</span></div>
       </div>
     `;
   }
@@ -371,12 +399,12 @@
     const showWaiver=opts.relocWaived;
     const relocTipIcon=" "+infoIcon(TIPS.relocation_charges);
     const vasLabel=opts.vasLabel||"Furlenco Care";
-    const relocSubLabel=opts.relocSubLabel||opts.relocLabel||"Relocation Charges";
+    const relocSubLabel=opts.relocSubLabel||opts.relocLabel||"Relocation charges";
     return`
       <div class="charges-group">
         ${row("Charges and VAS",vas+reloc)}
         <div class="row indent"><span class="lbl">${vasLabel}</span><span class="val">${fmt(vas)}</span></div>
-        <div class="row indent"><span class="lbl">${relocSubLabel}${relocTipIcon}</span><span class="val">${fmt(reloc)} ${showWaiver?waiverTag():""}</span></div>
+        <div class="row indent"><span class="lbl">${relocSubLabel}${relocTipIcon}</span><span class="val">${showWaiver?`₹0 ${waiverTag()}`:fmt(reloc)}</span></div>
       </div>
     `;
   }
@@ -392,12 +420,12 @@
   function ctaButton(label="Proceed with Relocation"){return`<button class="cta">${label} →</button>`;}
   function expandable(idKey,label,contentHtml){
     return`
-      <div class="section">
+      <div class="section" style="padding:0">
         <div class="section-head" onclick="toggleSec('${idKey}')">
           <div class="section-title"><span class="dot">☰</span><span>${label}</span></div>
           <span class="chev" id="chev-${idKey}">▾</span>
         </div>
-        <div id="body-${idKey}" style="display:none; margin-top:10px;">${contentHtml}</div>
+        <div id="body-${idKey}" style="display:none; padding:12px 16px 0;">${contentHtml}</div>
       </div>
     `;
   }
@@ -432,17 +460,34 @@
       <span class="plan-callout-desc">${infoIcon(`You selected a ${planTenure||""}-month upfront plan for this product. Your price is locked in for the full tenure.`)}</span>
     </div>`;
   }
-  function totalPayableAmountBlock(lines){
-    let html=`<div class="section total-payable-amount"><div class="section-title"><span class="dot">₹</span><span>Total Payable Amount</span></div>`;
-    lines.forEach(l=>{
+  function totalPayableAmountBlock(lines,totalVal){
+    // Find bold line value if not passed explicitly
+    const boldLine = lines.find(l=>l.bold);
+    const displayTotal = totalVal != null ? totalVal : (boldLine ? boldLine.val : 0);
+    // Filter out muted lines (Any Other VAS) and remove bold line from detail rows
+    const detailLines = lines.filter(l=>!l.muted && !l.bold);
+    let html=`<div class="payable-bar-wrap">
+      <div class="payable-bar" onclick="togglePayableBar(this)">
+        <span class="payable-bar-label">Payable Amount</span>
+        <span class="payable-bar-right"><span class="payable-bar-total">${fmt(displayTotal)}</span><span class="payable-bar-chev open">▴</span></span>
+      </div>
+      <div class="payable-bar-body">`;
+    detailLines.forEach(l=>{
       const o={};
-      if(l.bold)o.bold=true;
       if(l.discount)o.discount=true;
-      if(l.muted)o.muted=true;
+      if(l.green)o.green=true;
       html+=row(l.lbl,l.val,o);
     });
-    return html+`</div>`;
+    html+=`${row("Total Payable",displayTotal,{bold:true})}</div></div>`;
+    return html;
   }
+  window.togglePayableBar=function(el){
+    el.classList.toggle('closed');
+    const body=el.nextElementSibling;
+    const chev=el.querySelector('.payable-bar-chev');
+    if(el.classList.contains('closed')){body.style.display='none';chev.classList.remove('open');}
+    else{body.style.display='';chev.classList.add('open');}
+  };
   function inputField(sid,field,label,value,type="number",options=null){
     const id=`inp_${sid}_${field}`;
     if(type==="select"){
@@ -485,10 +530,26 @@
       <div class="accordion-body"><div class="card">${body}${ctaButton()}</div></div>
     </div>`;
   }
+
+  function devNotesBlock(id, notes){
+    const items = notes.map(n=>`<div class="dev-note">${n}</div>`).join('');
+    return `<div class="dev-notes">
+      <div class="dev-notes-trigger" onclick="toggleDevNotes('${id}')">
+        <span class="dev-notes-title">🛠 Dev Notes</span>
+        <span class="dev-notes-chev" id="dn-chev-${id}">▾</span>
+      </div>
+      <div class="dev-notes-body" id="dn-body-${id}">${items}</div>
+    </div>`;
+  }
+  window.toggleDevNotes=function(id){
+    const body=document.getElementById('dn-body-'+id);
+    const chev=document.getElementById('dn-chev-'+id);
+    body.classList.toggle('open');
+    chev.classList.toggle('open');
+  };
   window.toggleAccordion=function(id){
     const el=document.getElementById('card-'+id);
-    document.querySelectorAll('.accordion.open').forEach(a=>{if(a!==el)a.classList.remove('open');});
-    el.classList.toggle('open');
+    el.classList.toggle('closed');
   };
 
   // ============ S1: Monthly + Relocation ============
@@ -504,14 +565,9 @@
     const open=`
       <div class="item-header"><span>Haven Loft Bi-Sectional - Light Grey</span><span>${fmt(r.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.basePrice)}</span><span style="color:var(--green);margin:0 4px">-${(r.disc*100).toFixed(0)}%</span>${fmt(r.monthly)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.vas)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.monthly + r.vas/s.tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.basePrice*r.disc*s.tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.subtotalCD)}
-      <div class="row"><span class="lbl">(F) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
-      ${chargesVASBlock(r.vas,r.relocCharged,{relocWaived:r.mtMet,relocSubLabel:"Relocation Charges"})}
+      <div class="row"><span class="lbl">Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.basePrice)}</span><span style="color:var(--green);margin:0 6px">-${fmt(s.basePrice*r.disc)}</span><b>${fmt(r.monthly)}</b></span></div>
+      <div class="row"><span class="lbl" style="color:var(--green);font-weight:600">Coupon Code (${g.couponCode})</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
+      ${chargesVASBlock(r.vas,r.relocCharged,{relocWaived:r.mtMet,relocSubLabel:"Relocation charges"})}
       ${row("Total Cost",r.totalCost)}
       ${row("GST",r.gst)}
       ${row("Total Payable",r.total,{bold:true})}
@@ -530,8 +586,8 @@
         {lbl:"Total Price",val:r.rental},
         {lbl:"Relocation Charges",val:r.relocCharged},
         {lbl:"Furlenco Care",val:r.vas},
-        {lbl:"Any Other VAS",val:0,muted:true},
-        {lbl:"Discount Applied",val:r.coupon,discount:true},
+        
+        {lbl:`Coupon Code (${g.couponCode})`,val:r.coupon,discount:true},
         {lbl:"Subtotal",val:r.totalCost},
         {lbl:"GST",val:r.gst},
         {lbl:"Total Payable",val:r.total,bold:true},
@@ -557,17 +613,29 @@
       ${planCalloutRow('monthly')}
       <div class="product-row"><div class="product-name">Sara Solid Wood Queen Bed <span class="pill pill-delivery">×1 Delivery</span></div></div>
       <div class="product-row"><div class="product-name">Blanca Queen Bed <span class="pill pill-return">×1 Return</span></div></div>
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.disc*100).toFixed(0)}%</span>${fmt(r.monthlyNew)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.vas/s.tenure)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.monthlyNew + r.vas/s.tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.newBase*r.disc*s.tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${s.tenure} Month${s.tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.rental)}
-      <div class="row"><span class="lbl">(F) Coupon Code (${g.couponCode}) ${infoIcon(`${s.couponPct}% × ₹${r.rental.toLocaleString("en-IN")} (Subtotal)`)}</span><span class="val discount-val">-${fmt(r.coupon)}</span></div>
-      ${chargesVASBlock(r.vas,r.relocCharged,{relocWaived:r.mtMet,relocSubLabel:"Relocation Charges"})}
-      ${row("Total Cost",r.subtotal)}
+      ${row("Old Product Price",`${fmt(s.oldBase)}/mo`)}
+      ${row("New Product Price",`${fmt(r.monthlyNew)}/mo`)}
+      <div class="charges-group">
+        <div class="row" onclick="toggleNest('s2-price')" style="cursor:pointer">
+          <span class="lbl" style="font-weight:600">Total Product Price</span>
+          <span class="val" style="display:flex;align-items:center;gap:6px">${fmt(r.rental)}<span id="s2-price-chev" style="font-size:12px;color:var(--ink-3)">▾</span></span>
+        </div>
+        <div id="nest-s2-price" style="display:none">
+          <div class="row indent"><span class="lbl">New Price × ${s.tenure} month${s.tenure===1?"":"s"}</span><span class="val">${fmt(r.rental)}</span></div>
+        </div>
+      </div>
+      <div class="charges-group">
+        ${row("Charges and VAS",r.vas+r.relocCharged)}
+        <div class="row indent"><span class="lbl">Total VAS</span><span class="val">${fmt(r.vas)}</span></div>
+        <div class="row indent"><span class="lbl">Relocation Fee ${infoIcon(r.mtMet?"₹0 — minimum tenure met.":"One-time fee for pickup, moving, delivery and installation.")}</span><span class="val">${r.mtMet?`<span class="strike">${fmt(r.relocCalc)}</span> ₹0`:fmt(r.relocCharged)}</span></div>
+      </div>
       ${taxSplitBlock(r.gst,r.taxOnProduct,r.taxOnCharges)}
-      ${row("Total Payable",r.total,{bold:true})}
+      ${row("Sub Total",r.subtotal)}
+      <div class="row bold" style="border-top:1px dashed var(--line);margin-top:4px;padding-top:10px">
+        <span class="lbl">Total Payable</span><span class="val"></span>
+      </div>
+      ${row("Total Payable with tax",r.total)}
+      ${row("Payable Amount",r.total,{bold:true})}
     `;
     const body=`
       ${inputsBlock("s2",inp)}
@@ -583,13 +651,22 @@
         {lbl:"Total Price",val:r.rental},
         {lbl:"Relocation Charges",val:r.relocCharged},
         {lbl:"Furlenco Care",val:r.vas},
-        {lbl:"Any Other VAS",val:0,muted:true},
-        {lbl:"Discount Applied",val:r.coupon,discount:true},
+        
+        {lbl:`Coupon Code (${g.couponCode})`,val:r.coupon,discount:true},
         {lbl:"Subtotal",val:r.subtotal},
         {lbl:"GST",val:r.gst},
-        {lbl:"Total Payable",val:r.total,bold:true},
+        {lbl:"Total Payable with tax",val:r.total},
+        {lbl:"Payable Amount",val:r.total,bold:true},
       ])}
     `;
+    if(false){ const s2DevNotes = devNotesBlock("s2",[
+      `<b>Relocation fee:</b> Charged on both Relocation and Swap orders. Not suppressed.`,
+      `<b>MT threshold:</b> <code>monthsUsed >= 3</code> → relocation fee = ₹0`,
+      `<b>Coupon:</b> Applied on <code>(E) Subtotal (C×D)</code> = monthly rental × tenure`,
+      `<b>Tax split:</b> On Product = <code>(rental − coupon) × GST%</code> · On Charges & VAS = <code>(reloc + VAS) × GST%</code>`,
+      `<b>Swap fee:</b> No separate swap fee — only relocation fee applies inside a relocation order`,
+    ]);
+    }
     return cardShell("s2","monthly","Scenario 2","Monthly + Swap",tenureCallout_Monthly(),
       ["Monthly plan","New SKU",r.mtMet?"MT met ✓":"MT not met"],body,r.total);
   }
@@ -618,7 +695,7 @@
       ${row("Subtotal",r.subtotalBeforeCredit)}
       ${row("GST",r.gst)}
       ${row("Total (incl. GST)",r.totalInclGst)}
-      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon(`Rental carried forward: ${fmt(r.upfrontTotal)} + GST paid at plan start: ${fmt(r.gstPaid)} = ${fmt(r.credit)}. GST read from order record — rate at time of original payment.`)}</span><span class="val discount-val">-${fmt(r.credit)}</span></div>
+      <div class="row"><span class="lbl">Credit ${infoIcon(`Your balance tenure credit = rental carried forward (${fmt(r.upfrontTotal)}) + GST you paid at plan start (${fmt(r.gstPaid)}) = ${fmt(r.credit)}. We use the GST amount from your original order — not recalculated at today\'s rate.`)}</span><span class="val discount-val">-${fmt(r.credit)}</span></div>
       ${row("Total Payable",r.netPayable,{bold:true})}
     `;
     const body=`
@@ -635,15 +712,26 @@
         {lbl:"Rentals for remaining tenure",val:r.upfrontTotal},
         {lbl:"Relocation Charges",val:r.relocCharged},
         {lbl:"Furlenco Care",val:r.vas},
-        {lbl:"Any Other VAS",val:0,muted:true},
+        
         {lbl:`(c) Coupon (${g.couponCode} — ${s.couponPct}% of Rentals)`,val:r.couponRaw,discount:true},
         {lbl:"Subtotal",val:r.subtotalBeforeCredit},
         {lbl:"GST",val:r.gst},
         {lbl:"Total (incl. GST)",val:r.totalInclGst},
-        {lbl:`Balance Tenure Credit (₹${r.upfrontTotal.toLocaleString("en-IN")} rental + ₹${r.gstPaid.toLocaleString("en-IN")} GST paid)`,val:r.credit,discount:true},
+        {lbl:"Credit",val:r.credit,discount:true},
         {lbl:"Total Payable",val:r.netPayable,bold:true},
       ])}
     `;
+    if(false){ const s3DevNotes = devNotesBlock("s3",[
+      `<b>Cliff logic:</b> <code>monthsUsed >= (planTenure >= 9 ? 6 : 3)</code> → reloc fee = ₹0 · Cliff table: 3mo→3, 6mo→3, 9mo→6, 12mo→6`,
+      `<b>Coupon:</b> Applied on <code>Rentals for remaining tenure</code> (Effective Monthly × tenure left), not base price`,
+      `<b>Credit formula:</b> <code>credit = upfrontTotal + gstPaid</code> — GST read from order record at time of original payment. NOT recalculated at relocation time.`,
+      `<span class="warn">⚠ Cap logic:</span> If <code>credit >= Total (incl. GST)</code> → payable = ₹0. Never go negative.`,
+      `<span class="warn">⚠ Backend prereq:</span> <code>gst_paid_on_upfront</code> must be stored on the order record at time of original payment. Field does not currently exist in OMS — confirmed via Metabase. Release blocker.`,
+      `<b>Credit surplus behaviour:</b> Undefined. Open item — carry forward, refund, or expire? Needs product decision.`,
+      `<b>tenureLeft = 0 edge case:</b> Block flow or show ₹0 cart? Undefined. Needs product decision.`,
+      `<b>gstPaid null fallback:</b> If field is missing, what happens? Needs defined default.`,
+    ]);
+    }
     return cardShell("s3","upfront","Scenario 3","Upfront + Relocation",tenureCallout_Upfront(r.tenureLeft),
       ["Upfront plan","Price protected",r.cliffCleared?"Cliff cleared ✓":"Cliff not cleared"],body,r.netPayable);
   }
@@ -696,8 +784,8 @@
         {lbl:"Total Price",val:r.newRental},
         {lbl:"Upgrade Fee",val:r.relocCharged},
         {lbl:"New Product VAS",val:r.vas},
-        {lbl:"Any Other VAS",val:0,muted:true},
-        {lbl:"Discount Applied",val:r.coupon,discount:true},
+        
+        {lbl:`Coupon Code (${g.couponCode})`,val:r.coupon,discount:true},
         {lbl:"Subtotal",val:r.subtotal},
         {lbl:"GST",val:r.gst},
         {lbl:"Total Payable (with tax)",val:r.totalWithTax},
@@ -705,6 +793,15 @@
         {lbl:"Total Payable",val:r.netPayable,bold:true},
       ])}
     `;
+    if(false){ const s4DevNotes = devNotesBlock("s4",[
+      `<b>Credit formula:</b> <code>credit = oldEffective × tenureLeft</code> — note: no GST component unlike S3`,
+      `<span class="warn">⚠ Cap logic:</span> If <code>credit >= totalWithTax</code> → payable = ₹0. Never go negative.`,
+      `<b>Cliff logic:</b> Upgrade Fee follows cliff, not MT. <code>monthsUsed >= (planTenure >= 9 ? 6 : 3)</code> → fee = ₹0`,
+      `<b>Tax split:</b> On Product = <code>(newRental − coupon) × GST%</code> · On Charges & VAS = <code>(upgradeFee + VAS) × GST%</code>`,
+      `<b>PLP Delta:</b> Internal label — needs customer-facing copy before production. Open item.`,
+      `<b>Credit surplus behaviour:</b> Undefined. Open item — carry forward, refund, or expire?`,
+    ]);
+    }
     return cardShell("s4","upfront","Scenario 4","Upfront + Swap",tenureCallout_Upfront(r.tenureLeft),
       ["Upfront plan","New SKU",r.cliffCleared?"Cliff cleared ✓":"Cliff not cleared"],body,r.netPayable);
   }
@@ -729,13 +826,9 @@
     const open=`
       <div class="item-header"><span>Set 1 — Monthly product</span><span>${fmt(r.s1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.s1_basePrice)}</span><span style="color:var(--green);margin:0 4px">-${(r.s1.disc*100).toFixed(0)}%</span>${fmt(r.s1.monthly)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.s1.vas/state.s5.s1_tenure)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.s1.monthly + r.s1.vas/state.s5.s1_tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.s1_basePrice*r.s1.disc*state.s5.s1_tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${state.s5.s1_tenure} Month${state.s5.s1_tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.s1.rental)}
-      ${chargesVASBlock(r.s1.vas,r.s1.relocCharged,{relocWaived:r.s1.mtMet,relocSubLabel:"Relocation Charges"})}
+      <div class="row"><span class="lbl">Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.s1_basePrice)}</span><span style="color:var(--green);margin:0 6px">-${fmt(s.s1_basePrice*r.s1.disc)}</span><b>${fmt(r.s1.monthly)}</b></span></div>
+      <div class="row"><span class="lbl" style="color:var(--green);font-weight:600">Coupon Code (${g.couponCode})</span><span class="val discount-val">-${fmt(r.s1.coupon)}</span></div>
+      ${chargesVASBlock(r.s1.vas,r.s1.relocCharged,{relocWaived:r.s1.mtMet,relocSubLabel:"Relocation charges"})}
       <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront product</span><span>${fmt(r.s2.netPayable)}</span></div>
       ${planCalloutRow('upfront',state.s5.s2_planTenure)}
       ${balanceTenureNest("s5-set2",r.s2.tenureLeft,`
@@ -759,13 +852,21 @@
         {lbl:"Total Price",val:r.cartTotalPrice},
         {lbl:"Relocation Charges",val:r.cartReloc},
         {lbl:"Furlenco Care",val:r.cartFcp},
-        {lbl:"Any Other VAS",val:0,muted:true},
-        {lbl:"Discount Applied",val:r.cartCoupon,discount:true},
+        
+        {lbl:`Coupon Code (${g.couponCode})`,val:r.cartCoupon,discount:true},
         {lbl:"Subtotal",val:r.cartSubtotal},
         {lbl:"GST",val:r.cartGst},
         {lbl:"Total Payable",val:r.cartTotal,bold:true},
       ])}
     `;
+    if(false){ const s5DevNotes = devNotesBlock("s5",[
+      `<b>Set 1 (Monthly):</b> MT logic — <code>monthsUsed >= 3</code> → reloc fee = ₹0`,
+      `<b>Set 2 (Upfront):</b> Cliff logic — <code>monthsUsed >= (planTenure >= 9 ? 6 : 3)</code> → reloc fee = ₹0`,
+      `<b>Set 2 credit:</b> Balance tenure carries forward silently — customer does not pay rental for remaining months. No credit deduction shown in cart for S5.`,
+      `<b>Coupon:</b> Applied at cart level across both sets`,
+      `<span class="warn">⚠ Backend prereq:</span> Same <code>gst_paid_on_upfront</code> requirement as S3 applies to Set 2`,
+    ]);
+    }
     return cardShell("s5","mix","Scenario 5","Mix (Monthly + Upfront) + Relocation",tenureCallout_Mix(r.s2_tenureLeft),
       ["2 sets","Monthly + Upfront"],body,r.cartTotal);
   }
@@ -792,13 +893,17 @@
     const open=`
       <div class="item-header"><span>Set 1 — Monthly swap</span><span>${fmt(r.s1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.s1_newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.s1.disc*100).toFixed(0)}%</span>${fmt(r.s1.monthlyNew)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.s1.vas/s.s1_tenure)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.s1.monthlyNew + r.s1.vas/s.s1_tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.s1_newBase*r.s1.disc*s.s1_tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${s.s1_tenure} Month${s.s1_tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.s1.rental)}
-      ${chargesVASBlock(r.s1.vas,r.s1.relocCharged,{relocWaived:r.s1.mtMet,relocSubLabel:"Relocation Charges"})}
+      ${row("Old Product Price",`${fmt(s.s1_newBase)}/mo`)}
+      ${row("New Product Price",`${fmt(r.s1.monthlyNew)}/mo`)}
+      <div class="charges-group">
+        <div class="row"><span class="lbl" style="font-weight:600">Total Product Price</span><span class="val">${fmt(r.s1.rental)}</span></div>
+        <div class="row indent"><span class="lbl">New Price × ${s.s1_tenure} month${s.s1_tenure===1?"":"s"}</span><span class="val">${fmt(r.s1.rental)}</span></div>
+      </div>
+      <div class="charges-group">
+        ${row("Charges and VAS",r.s1.vas+r.s1.relocCharged)}
+        <div class="row indent"><span class="lbl">Total VAS</span><span class="val">${fmt(r.s1.vas)}</span></div>
+        <div class="row indent"><span class="lbl">Relocation Fee ${infoIcon(r.s1.mtMet?"₹0 — minimum tenure met.":"One-time fee charged on relocation and swap orders.")}</span><span class="val">${r.s1.mtMet?`<span class="strike">${fmt(r.s1.relocCalc)}</span> ₹0`:fmt(r.s1.relocCharged)}</span></div>
+      </div>
       <div class="item-header" style="margin-top:14px;"><span>Set 2 — Upfront swap</span><span>${fmt(r.s2.netPayable)}</span></div>
       ${planCalloutRow('upfront',s.s2_planTenure)}
       ${row("Old Product Price (Pretax)",`${fmt(r.s2.oldEffective)}/mo`)}
@@ -819,8 +924,8 @@
         {lbl:"Total Price",val:r.cartTotalPrice},
         {lbl:"Relocation Charges",val:r.cartReloc},
         {lbl:"Furlenco Care",val:r.cartFcp},
-        {lbl:"Any Other VAS",val:0,muted:true},
-        {lbl:"Discount Applied",val:r.cartCoupon,discount:true},
+        
+        {lbl:`Coupon Code (${g.couponCode})`,val:r.cartCoupon,discount:true},
         {lbl:"Subtotal",val:r.cartSubtotal},
         {lbl:"GST",val:r.cartGst},
         {lbl:"Total Payable (with tax)",val:r.cartTotalWithTax},
@@ -828,6 +933,14 @@
         {lbl:"Total Payable",val:r.cartNetPayable,bold:true},
       ])}
     `;
+    if(false){ const s6DevNotes = devNotesBlock("s6",[
+      `<b>Set 1 (Monthly swap):</b> MT logic · relocation fee charged on swap orders`,
+      `<b>Set 2 (Upfront swap):</b> Cliff logic · credit = <code>oldEffective × tenureLeft</code> (no GST component)`,
+      `<span class="warn">⚠ Cap logic:</span> If <code>credit >= cartTotalWithTax</code> → payable = ₹0`,
+      `<b>Tax split:</b> Applies to both sets individually`,
+      `<b>Credit surplus behaviour:</b> Undefined. Open item.`,
+    ]);
+    }
     return cardShell("s6","mix","Scenario 6","Mix (Monthly + Upfront) + Swap",tenureCallout_Mix(r.s2.tenureLeft),
       ["2 sets","Both swap","Credit applies"],body,r.cartNetPayable);
   }
@@ -868,14 +981,9 @@
       <!-- R1: Monthly Relocation -->
       <div class="item-header"><span>Set R1 — Monthly Relocation</span><span>${fmt(r.r1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.r1_base)}</span><span style="color:var(--green);margin:0 4px">-${(r.r1.disc*100).toFixed(0)}%</span>${fmt(r.r1.monthly)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.r1.vas/s.r1_tenure)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.r1.monthly + r.r1.vas/s.r1_tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.r1_base*r.r1.disc*s.r1_tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${s.r1_tenure} Month${s.r1_tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.r1.rental)}
-      ${chargesVASBlock(r.r1.vas,r.r1.relocCharged,{relocWaived:r.r1.mtMet,relocSubLabel:"Relocation Charges"})}
-      <div class="row"><span class="lbl">(F) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r1.coupon)}</span></div>
+      <div class="row"><span class="lbl">Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.r1_base)}</span><span style="color:var(--green);margin:0 6px">-${fmt(s.r1_base*r.r1.disc)}</span><b>${fmt(r.r1.monthly)}</b></span></div>
+      <div class="row"><span class="lbl" style="color:var(--green);font-weight:600">Coupon Code (${g.couponCode})</span><span class="val discount-val">-${fmt(r.r1.coupon)}</span></div>
+      ${chargesVASBlock(r.r1.vas,r.r1.relocCharged,{relocWaived:r.r1.mtMet,relocSubLabel:"Relocation charges"})}
       ${row("Total Cost",r.r1.totalCost)}
       ${row("GST",r.r1.gst)}
       ${row("Set R1 Total",r.r1.total,{bold:true})}
@@ -893,20 +1001,24 @@
       ${row("Subtotal",r.r2.subtotalBeforeCredit)}
       ${row("GST",r.r2.gst)}
       ${row("Total (incl. GST)",r.r2.totalInclGst)}
-      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Rental ₹"+r.r2.upfrontTotal.toLocaleString("en-IN")+" + GST paid at plan start ₹"+r.r2.gstPaid.toLocaleString("en-IN"))}</span><span class="val discount-val">-${fmt(r.r2.credit)}</span></div>
+      <div class="row"><span class="lbl">Credit ${infoIcon(`Balance tenure credit = rental carried forward (${fmt(r.r2.upfrontTotal)}) + GST paid at plan start (${fmt(r.r2.gstPaid)}) = ${fmt(r.r2.credit)}.`)}</span><span class="val discount-val">-${fmt(r.r2.credit)}</span></div>
       ${row("Set R2 Total",r.r2.netPayable,{bold:true})}
 
       <!-- SW1: Monthly Swap -->
       <div class="item-header" style="margin-top:14px"><span>Set SW1 — Monthly Swap</span><span>${fmt(r.sw1.total)}</span></div>
       ${planCalloutRow('monthly')}
-      <div class="row"><span class="lbl">(A) Base Rental Cost</span><span class="val"><span class="strike">${fmt(s.sw1_newBase)}</span><span style="color:var(--green);margin:0 4px">-${(r.sw1.disc*100).toFixed(0)}%</span>${fmt(r.sw1.monthlyNew)}/mo</span></div>
-      ${row("(B) Furlenco Care",`${fmt(r.sw1.vas/s.sw1_tenure)}/mo`)}
-      ${row("(C) Monthly Rental Cost (A + B)",`${fmt(r.sw1.monthlyNew + r.sw1.vas/s.sw1_tenure)}/mo`)}
-      <div class="row muted"><span class="lbl" style="padding-left:0;color:var(--green);font-style:normal;font-size:12.5px">You will save ${fmt(s.sw1_newBase*r.sw1.disc*s.sw1_tenure)}</span><span class="val"></span></div>
-      ${row("(D) Tenure Selected",`${s.sw1_tenure} Month${s.sw1_tenure===1?"":"s"}`)}
-      ${row("(E) Subtotal (C × D)",r.sw1.rental)}
-      ${chargesVASBlock(r.sw1.vas,r.sw1.relocCharged,{relocWaived:r.sw1.mtMet,relocSubLabel:"Relocation Charges"})}
-      <div class="row"><span class="lbl">(F) Coupon (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw1.coupon)}</span></div>
+      ${row("Old Product Price",`${fmt(s.sw1_newBase)}/mo`)}
+      ${row("New Product Price",`${fmt(r.sw1.monthlyNew)}/mo`)}
+      <div class="charges-group">
+        <div class="row"><span class="lbl" style="font-weight:600">Total Product Price</span><span class="val">${fmt(r.sw1.rental)}</span></div>
+        <div class="row indent"><span class="lbl">New Price × ${s.sw1_tenure} month${s.sw1_tenure===1?"":"s"}</span><span class="val">${fmt(r.sw1.rental)}</span></div>
+      </div>
+      <div class="charges-group">
+        ${row("Charges and VAS",r.sw1.vas+r.sw1.relocCharged)}
+        <div class="row indent"><span class="lbl">Total VAS</span><span class="val">${fmt(r.sw1.vas)}</span></div>
+        <div class="row indent"><span class="lbl">Relocation Fee ${infoIcon(r.sw1.mtMet?"₹0 — minimum tenure met.":"One-time fee charged on relocation and swap orders.")}</span><span class="val">${r.sw1.mtMet?`<span class="strike">${fmt(r.sw1.relocCalc)}</span> ₹0`:fmt(r.sw1.relocCharged)}</span></div>
+      </div>
+      <div class="row"><span class="lbl" style="color:var(--green);font-weight:600">Coupon Code (${g.couponCode})</span><span class="val discount-val">-${fmt(r.sw1.coupon)}</span></div>
       ${row("Total Cost",r.sw1.subtotal)}
       ${taxSplitBlock(r.sw1.gst,r.sw1.taxOnProduct,r.sw1.taxOnCharges)}
       ${row("Set SW1 Total",r.sw1.total,{bold:true})}
@@ -928,7 +1040,7 @@
       ${row("Sub Total",r.sw2.subtotal)}
       ${taxSplitBlock(r.sw2.gst,r.sw2.taxOnProduct,r.sw2.taxOnCharges)}
       ${row("Total payable with tax",r.sw2.totalWithTax)}
-      <div class="row"><span class="lbl">Balance Tenure Credit ${infoIcon("Rental ₹"+r.sw2.credit.toLocaleString("en-IN")+" (includes GST paid at plan start)")}</span><span class="val discount-val">-${fmt(r.sw2.credit)}</span></div>
+      <div class="row"><span class="lbl">Credit ${infoIcon(`Balance tenure credit = your remaining rental value + GST paid at plan start. Applied against your new cart total.`)}</span><span class="val discount-val">-${fmt(r.sw2.credit)}</span></div>
       ${row("Set SW2 Total",r.sw2.netPayable,{bold:true})}
     `;
 
@@ -950,10 +1062,23 @@
         {lbl:"Coupons Applied",val:r.cartCoupon,discount:true},
         {lbl:"GST (all sets)",val:r.cartGst},
         {lbl:"Total (incl. GST)",val:r.cartTotalWithTax},
-        {lbl:"Balance Tenure Credit (R2 + SW2)",val:r.totalCredit,discount:true},
+        {lbl:"Credit (R2 + SW2)",val:r.totalCredit,discount:true},
         {lbl:"Total Payable",val:r.cartNetPayable,bold:true},
       ])}
     `;
+    if(false){ const s7DevNotes = devNotesBlock("s7",[
+      `<b>R1 (Monthly relocation):</b> MT logic — <code>monthsUsed >= 3</code> → reloc fee = ₹0`,
+      `<b>R2 (Upfront relocation):</b> Cliff logic · credit = <code>upfrontTotal + gstPaid</code>`,
+      `<b>SW1 (Monthly swap):</b> MT logic · relocation fee charged`,
+      `<b>SW2 (Upfront swap):</b> Cliff logic · credit = <code>oldEffective × tenureLeft</code> (no GST)`,
+      `<b>Total credit:</b> <code>R2.credit + SW2.credit</code>`,
+      `<span class="warn">⚠ Cap logic:</span> Applied at cart level — if <code>totalCredit >= cartTotalWithTax</code> → payable = ₹0`,
+      `<span class="warn">⚠ Backend prereq:</span> <code>gst_paid_on_upfront</code> required for R2. Field does not exist in OMS — confirmed via Metabase.`,
+      `<b>Production frequency:</b> Confirmed real — Metabase shows 3 users hit 4 concurrent swaps in Mar 2026. ~2.6% of monthly swap users.`,
+      `<b>S7 order state:</b> Confirm with engineering that 4-set mixed order is a supported order state before building.`,
+      `<b>Credit surplus behaviour:</b> Undefined for both R2 and SW2. Open item.`,
+    ]);
+    }
     return cardShell("s7","mix","Scenario 7","2 Relocations + 2 Swaps (Monthly & Upfront)",
       '',["2 Relocations","2 Swaps","Monthly + Upfront","Credit applies"],body,r.cartNetPayable);
   }
@@ -964,12 +1089,12 @@
     const scrollY=window.scrollY;
     const openSecs=new Set();
     document.querySelectorAll(".chev.open").forEach(c=>openSecs.add(c.id.replace("chev-","")));
-    const openAccordions=new Set();
-    document.querySelectorAll(".accordion.open").forEach(a=>openAccordions.add(a.id.replace("card-","")));
+    const closedAccordions=new Set();
+    document.querySelectorAll(".accordion.closed").forEach(a=>closedAccordions.add(a.id.replace("card-","")));
     const fe=document.activeElement;
     const fid=fe&&fe.id?fe.id:null;
     const fst=fe&&fe.selectionStart!=null?fe.selectionStart:null;
-    grid.innerHTML=[renderS1(),renderS2(),renderS3(),renderS4(),renderS5(),renderS6(),renderS7()].join("");
+    grid.innerHTML=[renderS1(),renderS3(),renderS5(),renderS7()].join("");
     document.querySelectorAll(".inputs-block input, .inputs-block select").forEach(el=>{
       el.addEventListener("input",onScenarioInputChange);
       el.addEventListener("change",onScenarioInputChange);
@@ -978,9 +1103,9 @@
       const b=document.getElementById("body-"+k),c=document.getElementById("chev-"+k);
       if(b&&c){b.style.display="";c.classList.add("open");}
     });
-    openAccordions.forEach(id=>{
+    closedAccordions.forEach(id=>{
       const el=document.getElementById("card-"+id);
-      if(el)el.classList.add("open");
+      if(el)el.classList.add("closed");
     });
     if(fid){
       const el=document.getElementById(fid);
